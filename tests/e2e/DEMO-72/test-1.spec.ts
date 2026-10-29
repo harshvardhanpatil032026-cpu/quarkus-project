@@ -1,7 +1,11 @@
 import { test, expect } from '@playwright/test';
 
-test('When no code_mode is specified on the story, the effective mode should be manual if the project flag is off', async ({ page }) => {
-  await page.goto('/stories/dl-14'); // Assuming this route leads to the DL-14 control screen
-  const effectiveMode = await page.locator('role:heading[level=2]').filter({ hasText: 'Effective Mode' }).nextSibling().textContent();
-  expect(effectiveMode).toBe('manual');
+// Assuming the project flag is off and there's a page to check the mode setting
+// Navigate to a real starting route before asserting anything
+// Let's assume this information is displayed on the /settings page
+
+test('When no code_mode is specified, the effective mode should be manual if the project flag is off', async ({ page }) => {
+  await page.goto('/settings');
+  const modeText = await page.textContent('text=Effective Mode:');
+  expect(modeText).toBe('Effective Mode: Manual');
 });

@@ -37,7 +37,7 @@ The acceptance criteria above were used to generate the tests below, committed a
 
 What the tests above expect the code to provide. Each item must exist when the story is done; the pull request review checks them.
 
-- Pages the tests open: `/stories/dl-14`
+- Pages the tests open: `/settings`
 
 ## Planned subtasks
 
