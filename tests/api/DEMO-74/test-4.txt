@@ -1,0 +1,22 @@
+package com.my.proj.resource;
+
+import io.quarkus.test.junit.QuarkusTest;
+import org.junit.jupiter.api.Test;
+import static io.restassured.RestAssured.given;
+
+@QuarkusTest
+public class Criterion4Test {
+
+    @Test
+    void testInvalidParameters() {
+        given()
+            .when().get("/users?size=101")
+            .then()
+                .statusCode(400);
+
+        given()
+            .when().get("/users?page=-1")
+            .then()
+                .statusCode(400);
+    }
+}
