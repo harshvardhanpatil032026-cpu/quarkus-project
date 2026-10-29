@@ -1,0 +1,29 @@
+import { expect } from '@jest/globals';
+import request from 'supertest';
+import app from '../app'; // Assuming the Express app is exported from app.js
+import { createTestUser, assignRoleToUser, createAuditLogEntry } from '../testUtils';
+
+beforeAll(async () => {
+  await createTestUser('testuser@example.com', 'password');
+  await assignRoleToUser('testuser@example.com', 'admin'); // Assuming 'admin' role has the appropriate permissions
+});
+
+describe('Audit Log Export Data Matching', () => {
+  test('The exported data matches the current state of the audit logs', async () => {
+    const logEntry = await createAuditLogEntry({ action: 'login', user: 'testuser@example.com' }); // Creating a test audit log entry
+
+    const exportResponse = await request(app)
+      .post('/api/audit-logs/export') // Assuming this is the route to initiate an audit log export
+      .auth('testuser@example.com', 'password');
+
+    expect(exportResponse.statusCode).toBe(200);
+    expect(exportResponse.body).toHaveProperty('fileUrl'); // Assuming a successful response includes a file URL
+
+    const downloadResponse = await request(app)
+      .get(exportResponse.body.fileUrl) // Downloading the exported file
+      .auth('testuser@example.com', 'password');
+
+    expect(downloadResponse.statusCode).toBe(200);
+    expect(downloadResponse.text.includes(logEntry.action)).toBe(true); // Checking if the log entry action is in the downloaded content
+  });
+});

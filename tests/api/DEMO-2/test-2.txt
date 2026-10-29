@@ -1,0 +1,27 @@
+import { expect } from '@jest/globals';
+import request from 'supertest';
+import app from '../app'; // Assuming the Express app is exported from app.js
+import { createTestUser, assignRoleToUser } from '../testUtils';
+
+beforeAll(async () => {
+  await createTestUser('testuser@example.com', 'password');
+  await assignRoleToUser('testuser@example.com', 'admin'); // Assuming 'admin' role has the appropriate permissions
+});
+
+describe('Audit Log Export Format', () => {
+  test('Exported files are in a readable format (e.g., CSV, PDF)', async () => {
+    const exportResponse = await request(app)
+      .post('/api/audit-logs/export') // Assuming this is the route to initiate an audit log export
+      .auth('testuser@example.com', 'password');
+
+    expect(exportResponse.statusCode).toBe(200);
+    expect(exportResponse.body).toHaveProperty('fileUrl'); // Assuming a successful response includes a file URL
+
+    const downloadResponse = await request(app)
+      .get(exportResponse.body.fileUrl) // Downloading the exported file
+      .auth('testuser@example.com', 'password');
+
+    expect(downloadResponse.statusCode).toBe(200);
+    expect(['text/csv', 'application/pdf']).toContain(downloadResponse.headers['content-type']); // Checking if the content type is CSV or PDF
+  });
+});
