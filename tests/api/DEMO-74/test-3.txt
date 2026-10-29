@@ -1,0 +1,33 @@
+package com.my.proj.resource;
+
+import io.quarkus.test.junit.QuarkusTest;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.Test;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.hasSize;
+
+@QuarkusTest
+public class Criterion3Test {
+
+    @Inject
+    EntityManager entityManager;
+
+    @Transactional
+    void setup() {
+        for (int i = 0; i < 25; i++) {
+            User user = new User();
+            user.name = "User" + i;
+            entityManager.persist(user);
+        }
+    }
+
+    @Test
+    void testDefaultPageSize() {
+        given()
+            .when().get("/users")
+            .then()
+                .statusCode(200)
+                .body("name", hasSize(20));
+    }
+}
