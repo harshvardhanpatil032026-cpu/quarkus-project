@@ -14,7 +14,7 @@ class RegisterUserNoPasswordInResponseTest {
         String body = given().contentType("application/json")
             .body("{\"name\":\"Carol\",\"email\":\"" + email + "\",\"password\":\"S3cret-Passw0rd!\"}")
             .when().post("/users")
-            .then().statusCode(anyOf(is(200), is(201)))
+            .then().statusCode(201)
             .body("$", not(hasKey("password")))
             .body("$", not(hasKey("passwordHash")))
             .body("$", not(hasKey("password_hash")))

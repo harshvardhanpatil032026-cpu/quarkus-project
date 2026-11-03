@@ -52,3 +52,21 @@ What the tests above expect the code to provide. Each item must exist when the s
 - [service] Hash passwords and persist them on registration (DEMO-87)
 - [api] Registration endpoint with request/response DTOs and validation (DEMO-88)
 - [tests] Tests for registration and password hashing (DEMO-89)
+
+## Implementation notes
+
+- `POST /users` returns **201 Created** with a `Location: /users/{id}` header and a `UserResponse` body (`id`, `name`, `email`). The tests assert exactly 201.
+- All user endpoints (`GET /users`, `GET /users/{id}`, `POST /users`) return `UserResponse` DTOs, never the `User` entity, so the password hash is never serialised. `UserEndpointsNoPasswordTest` and `RegisterUserNoPasswordInResponseTest` verify this.
+
+## Running and interpreting the tests
+
+From `my-app/`:
+
+```
+mvn test                                    # all tests
+mvn test -Dtest=RegisterUserSuccessTest    # a single test class
+```
+
+- Success: the build ends with `BUILD SUCCESS` and `Failures: 0, Errors: 0` in the Surefire summary.
+- A failure names the test class/method and the RestAssured expectation that was not met (e.g. `Expected status code <201> but was <500>`); reports are in `my-app/target/surefire-reports/`.
+- The `tests/api/DEMO-86/test-N.txt` files are the generated sources of the `Register*`/`UserEndpointsNoPassword*` JUnit classes in `my-app/src/test/java/com/my/proj/resource/`.

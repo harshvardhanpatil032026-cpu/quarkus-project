@@ -14,7 +14,7 @@ class RegisterUserSuccessTest {
         given().contentType("application/json")
             .body("{\"name\":\"Alice\",\"email\":\"" + email + "\",\"password\":\"S3cret-Passw0rd!\"}")
             .when().post("/users")
-            .then().statusCode(anyOf(is(200), is(201)))
+            .then().statusCode(201)
             .body("id", notNullValue())
             .body("name", is("Alice"))
             .body("email", is(email));

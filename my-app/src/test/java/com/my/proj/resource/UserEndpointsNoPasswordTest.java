@@ -13,7 +13,7 @@ class UserEndpointsNoPasswordTest {
         String email = "u" + System.nanoTime() + "@example.com";
         int id = given().contentType("application/json")
             .body("{\"name\":\"Dave\",\"email\":\"" + email + "\",\"password\":\"S3cret-Passw0rd!\"}")
-            .when().post("/users").then().statusCode(anyOf(is(200), is(201)))
+            .when().post("/users").then().statusCode(201)
             .extract().path("id");
 
         given().when().get("/users/" + id).then().statusCode(200)

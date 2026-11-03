@@ -21,7 +21,7 @@ class RegisterUserPasswordHashedTest {
         String plain = "S3cret-Passw0rd!";
         given().contentType("application/json")
             .body("{\"name\":\"Bob\",\"email\":\"" + email + "\",\"password\":\"" + plain + "\"}")
-            .when().post("/users").then().statusCode(anyOf(is(200), is(201)));
+            .when().post("/users").then().statusCode(201);
 
         // Column name password_hash is specified by the task plan for this story.
         String stored = (String) em.createNativeQuery("select password_hash from users where email = :e")
