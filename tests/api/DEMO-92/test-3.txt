@@ -1,0 +1,29 @@
+package com.my.proj.resource;
+
+import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.http.ContentType;
+import org.junit.jupiter.api.Test;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.hasKey;
+
+@QuarkusTest
+public class Criterion3_PasswordNotInResponse {
+
+    @Test
+    public void testPasswordNotInResponse() {
+        User user = new User();
+        user.name = "Alice Smith";
+        user.email = "alice.smith@example.com";
+        user.password = "securePassword123";
+
+        given()
+            .contentType(ContentType.JSON)
+            .body(user)
+            .when().post("/users")
+            .then()
+                .statusCode(201)
+                .body(not(hasKey("password")))
+                .body(not(hasKey("hashedPassword")));
+    }
+}

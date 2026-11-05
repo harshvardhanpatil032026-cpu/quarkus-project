@@ -1,0 +1,30 @@
+package com.my.proj.resource;
+
+import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.http.ContentType;
+import org.junit.jupiter.api.Test;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+
+@QuarkusTest
+public class Criterion1_SuccessfulRegistration {
+
+    @Test
+    public void testRegisterUser() {
+        User user = new User();
+        user.name = "John Doe";
+        user.email = "john.doe@example.com";
+        user.password = "securePassword123";
+
+        given()
+            .contentType(ContentType.JSON)
+            .body(user)
+            .when().post("/users")
+            .then()
+                .statusCode(201)
+                .body("name", is(user.name))
+                .body("email", is(user.email))
+                .body("id", notNullValue());
+    }
+}
