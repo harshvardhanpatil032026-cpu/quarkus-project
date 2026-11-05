@@ -1,0 +1,49 @@
+package com.my.proj.resource;
+
+import com.my.proj.dto.RegisterUserRequest;
+import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.http.ContentType;
+import org.junit.jupiter.api.Test;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasKey;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+@QuarkusTest
+public class Criterion4_PasswordNotInUserData {
+
+    @Test
+    public void testPasswordNotInUserData() {
+        String plain = "securePassword123";
+        String email = "bob.johnson." + System.nanoTime() + "@example.com";
+
+        int id = given()
+            .contentType(ContentType.JSON)
+            .body(new RegisterUserRequest("Bob Johnson", email, plain))
+            .when().post("/users")
+            .then().statusCode(201)
+            .extract().path("id");
+
+        // GET /users returns a JSON array: the user must be listed, and no element may carry a secret.
+        String list = given()
+            .when().get("/users")
+            .then()
+                .statusCode(200)
+                .body("email", hasItem(email))
+                .extract().asString();
+        assertFalse(list.contains(plain));
+        assertFalse(list.toLowerCase().contains("password"));
+        assertFalse(list.contains("$2a$") || list.contains("$2b$") || list.contains("$2y$"));
+
+        // GET /users/{id} returns a single object.
+        given()
+            .when().get("/users/" + id)
+            .then()
+                .statusCode(200)
+                .body("$", not(hasKey("password")))
+                .body("$", not(hasKey("passwordHash")))
+                .body("$", not(hasKey("password_hash")));
+    }
+}

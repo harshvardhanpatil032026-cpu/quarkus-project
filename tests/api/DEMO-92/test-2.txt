@@ -1,0 +1,45 @@
+package com.my.proj.resource;
+
+import com.my.proj.dto.RegisterUserRequest;
+import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.http.ContentType;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import org.junit.jupiter.api.Test;
+
+import static io.restassured.RestAssured.given;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+@QuarkusTest
+public class Criterion2_PasswordHashed {
+
+    @Inject
+    EntityManager em;
+
+    @Test
+    public void testPasswordHashed() {
+        String plain = "securePassword123";
+        String email = "jane.doe." + System.nanoTime() + "@example.com";
+
+        given()
+            .contentType(ContentType.JSON)
+            .body(new RegisterUserRequest("Jane Doe", email, plain))
+            .when().post("/users")
+            .then().statusCode(201);
+
+        String stored = (String) em
+                .createNativeQuery("select password_hash from users where email = :email")
+                .setParameter("email", email)
+                .getSingleResult();
+
+        assertNotNull(stored);
+        assertNotEquals(plain, stored);
+        assertFalse(stored.contains(plain));
+        // bcrypt hashes start with $2a$/$2b$/$2y$ and are 60 chars; Quarkus' BcryptUtil uses a "$2a$" MCF form.
+        assertTrue(stored.startsWith("$2"), "stored value should be a bcrypt hash");
+        assertTrue(stored.length() >= 32);
+    }
+}

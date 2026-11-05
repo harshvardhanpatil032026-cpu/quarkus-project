@@ -3,10 +3,13 @@ package com.my.proj.resource;
 import java.net.URI;
 import java.util.List;
 
+import com.my.proj.dto.RegisterUserRequest;
+import com.my.proj.dto.UserResponse;
 import com.my.proj.entity.User;
 import com.my.proj.service.UserService;
 
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
@@ -26,20 +29,20 @@ public class UserResource {
     UserService userService;
 
     @GET
-    public List<User> getUsers() {
-        return userService.getAllUsers();
+    public List<UserResponse> getUsers() {
+        return userService.getAllUsers().stream().map(UserResponse::from).toList();
     }
 
     @GET
     @Path("/{id}")
-    public User getUser(@PathParam("id") Long id) {
-        return userService.getUserById(id);
+    public UserResponse getUser(@PathParam("id") Long id) {
+        return UserResponse.from(userService.getUserById(id));
     }
 
     @POST
-    public Response createUser(User user) {
-        User created = userService.createUser(user);
-        return Response.created(URI.create("/users/" + created.id)).entity(created).build();
+    public Response createUser(@Valid RegisterUserRequest request) {
+        User created = userService.createUser(request.name(), request.email(), request.password());
+        return Response.created(URI.create("/users/" + created.id)).entity(UserResponse.from(created)).build();
     }
 
     @DELETE
