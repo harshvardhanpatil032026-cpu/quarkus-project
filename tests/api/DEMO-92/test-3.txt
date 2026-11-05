@@ -1,29 +1,35 @@
 package com.my.proj.resource;
 
+import com.my.proj.dto.RegisterUserRequest;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
+
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.hasKey;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @QuarkusTest
 public class Criterion3_PasswordNotInResponse {
 
     @Test
     public void testPasswordNotInResponse() {
-        User user = new User();
-        user.name = "Alice Smith";
-        user.email = "alice.smith@example.com";
-        user.password = "securePassword123";
+        String plain = "securePassword123";
+        String email = "alice.smith." + System.nanoTime() + "@example.com";
 
-        given()
+        String body = given()
             .contentType(ContentType.JSON)
-            .body(user)
+            .body(new RegisterUserRequest("Alice Smith", email, plain))
             .when().post("/users")
             .then()
                 .statusCode(201)
-                .body(not(hasKey("password")))
-                .body(not(hasKey("hashedPassword")));
+                .body("$", not(hasKey("password")))
+                .body("$", not(hasKey("passwordHash")))
+                .body("$", not(hasKey("password_hash")))
+                .extract().asString();
+
+        assertFalse(body.contains(plain));
+        assertFalse(body.contains("$2a$") || body.contains("$2b$") || body.contains("$2y$"));
     }
 }

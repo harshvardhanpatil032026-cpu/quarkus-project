@@ -1,39 +1,45 @@
 package com.my.proj.resource;
 
+import com.my.proj.dto.RegisterUserRequest;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
+
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.not;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @QuarkusTest
 public class Criterion2_PasswordHashed {
 
-    @Transactional
-    void setup() {
-        User user = new User();
-        user.name = "Jane Doe";
-        user.email = "jane.doe@example.com";
-        user.password = "securePassword123";
-
-        given()
-            .contentType(ContentType.JSON)
-            .body(user)
-            .when().post("/users");
-    }
+    @Inject
+    EntityManager em;
 
     @Test
     public void testPasswordHashed() {
-        setup();
+        String plain = "securePassword123";
+        String email = "jane.doe." + System.nanoTime() + "@example.com";
 
-        User user = (User) EntityManager.createEntityManager()
-                .createQuery("SELECT u FROM User u WHERE u.email = :email")
-                .setParameter("email", "jane.doe@example.com")
+        given()
+            .contentType(ContentType.JSON)
+            .body(new RegisterUserRequest("Jane Doe", email, plain))
+            .when().post("/users")
+            .then().statusCode(201);
+
+        String stored = (String) em
+                .createNativeQuery("select password_hash from users where email = :email")
+                .setParameter("email", email)
                 .getSingleResult();
 
-        assert !user.password.equals("securePassword123");
+        assertNotNull(stored);
+        assertNotEquals(plain, stored);
+        assertFalse(stored.contains(plain));
+        // bcrypt hashes start with $2a$/$2b$/$2y$ and are 60 chars; Quarkus' BcryptUtil uses a "$2a$" MCF form.
+        assertTrue(stored.startsWith("$2"), "stored value should be a bcrypt hash");
+        assertTrue(stored.length() >= 32);
     }
 }
