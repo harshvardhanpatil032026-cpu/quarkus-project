@@ -1,0 +1,11 @@
+com/my/proj/resource/Criterion3_PasswordNotInResponse.class
+com/my/proj/resource/RegisterUserNoPasswordInResponseTest.class
+com/my/proj/resource/Criterion4_PasswordNotInUserData.class
+com/my/proj/resource/Criterion1_SuccessfulRegistration.class
+com/my/proj/resource/RegisterUserPasswordHashedTest.class
+com/my/proj/resource/UserEndpointsNoPasswordTest.class
+com/my/proj/resource/RegisterUserInvalidEmailTest.class
+com/my/proj/resource/RegisterUserDuplicateEmailTest.class
+com/my/proj/resource/RegisterUserSuccessTest.class
+com/my/proj/resource/Criterion2_PasswordHashed.class
+com/my/proj/resource/RegisterUserMissingFieldsTest.class

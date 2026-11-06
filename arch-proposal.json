@@ -1,0 +1,29 @@
+{
+  "run_id": "3a4f767cb7692ad4551ae983c8bdcfa503aa8381585ae557d29d514e238c228e",
+  "input_version": "9f698e1a1ba7561d1f105f2c2850b98e6938dfed0b4671dca819526ac19ebd73",
+  "submission_id": "sub-story17-architecture-1",
+  "draft": {
+    "summary": "The story adds a registration capability to the existing Quarkus module 'my-app'. The repository index shows no routes, tables or auth files, so persistence, password hashing and a REST endpoint are all new. The only known existing code is a greeting resource and its REST Assured test under com.my.proj.resource. Likely shape: a REST resource for registration, a request/response DTO pair (the response excluding password and hash), a user entity with a unique email and a stored password hash, a repository, and a small service that hashes the password (salted one-way, e.g. bcrypt) before persisting. Which persistence stack and hashing library the project uses is not known from the index (tech_stack is empty), so those choices still need confirming.",
+    "affected_modules": [
+      "my-app"
+    ],
+    "affected_packages": [
+      "com.my.proj.resource (confirmed from existing test path; new registration resource expected here)",
+      "com.my.proj.entity (proposed, new; user entity)",
+      "com.my.proj.repository (proposed, new; user repository)",
+      "com.my.proj.service (proposed, new; registration and password hashing)",
+      "com.my.proj.dto (proposed, new; request and response objects)"
+    ],
+    "complexity_score": 0.4,
+    "risks": [
+      "No persistence layer, datasource configuration or auth setup is indexed, so database dependency, schema creation and test datasource setup may all need to be added; the effort depends on what my-app already declares in its build file, which was not available.",
+      "Hashing algorithm and parameters are not specified; a weak or unsalted choice would break the secure-storage requirement.",
+      "Password or hash leakage via serialised entities, response DTOs, validation error messages or logs; the response must use a dedicated DTO rather than the entity.",
+      "Duplicate-email handling is unspecified; concurrent registrations need a database unique constraint rather than only a check-then-insert, and case handling of emails must be decided.",
+      "Package names other than com.my.proj.resource are proposals, not facts from the repository, and should follow existing conventions once confirmed.",
+      "Only one test exists (GreetingResourceTest); there are no test helpers, so tests for the new endpoint will need their own setup and database state handling."
+    ],
+    "confidence": 0.55
+  },
+  "instructions_version": "shared-drafting/1/architecture"
+}

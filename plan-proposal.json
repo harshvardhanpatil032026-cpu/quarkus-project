@@ -1,0 +1,33 @@
+{
+  "run_id": "3a4f767cb7692ad4551ae983c8bdcfa503aa8381585ae557d29d514e238c228e",
+  "input_version": "27fea9c92b9e52d0f872da926714b4c54e9003d5e67a947f6bdc6cde315b065f",
+  "submission_id": "sub-story17-task-planning-2",
+  "draft": {
+    "tasks": [
+      {
+        "category": "backend",
+        "component": "persistence",
+        "title": "Add User entity and repository with hashed password storage",
+        "description": "Create the user table/entity (id, name, unique email, password hash) and a repository. Hash passwords with a one-way, salted algorithm (e.g. bcrypt) before persisting; never store plain text. Keep the hash out of serialised output and logs. Covers: stored password differs from the submitted one and is a hash.",
+        "estimated_hours": 4
+      },
+      {
+        "category": "backend",
+        "component": "api",
+        "title": "Implement user registration endpoint with validation",
+        "description": "Add a POST registration endpoint in the Quarkus app accepting name, email and password. Validate that all three are present and non-blank and that the email is well-formed. Reject duplicate emails (status code pending PO answer). Return a response DTO that excludes the password and hash. Covers: success status on valid registration, no password or hash in any response.",
+        "estimated_hours": 5
+      },
+      {
+        "category": "testing",
+        "component": "api",
+        "title": "Add REST Assured tests for registration",
+        "description": "Using the existing JUnit 5 + REST Assured setup, test: successful registration, password stored as a hash and not equal to the plain text, response body free of password and hash, missing/blank/malformed field rejection, and duplicate email handling.",
+        "estimated_hours": 3
+      }
+    ],
+    "confidence": 0.65,
+    "replace_task_ids": []
+  },
+  "instructions_version": "shared-drafting/1/task_planning"
+}

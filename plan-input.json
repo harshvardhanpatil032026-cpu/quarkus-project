@@ -1,0 +1,240 @@
+{
+  "phase": "task_planning",
+  "story_id": 17,
+  "title": "Register a new user with a hashed password",
+  "description": "As a new user, I want to register with my name, email and password so that I can later log in. Passwords must be stored securely and never returned by the API.",
+  "analysis": {
+    "requirement": {
+      "risks": [
+        "Weak hashing choice or missing salting would undermine the secure-storage requirement.",
+        "Passwords or hashes could leak through logs, error messages or serialised entities.",
+        "Unspecified duplicate-email and validation behaviour may lead to inconsistent implementation.",
+        "Repository index shows no existing routes, tables or auth files, so persistence and security setup are likely to be built from scratch."
+      ],
+      "contracts": [],
+      "confidence": 0.6,
+      "edge_cases": [
+        "Registration with an email that is already registered.",
+        "Registration with a missing name, email or password.",
+        "Registration with an empty or whitespace-only field.",
+        "Registration with a malformed email address.",
+        "Email differing only in letter case from an existing one.",
+        "Very long or non-ASCII/special-character passwords and names.",
+        "Two simultaneous registrations with the same email."
+      ],
+      "business_rules": [
+        "Passwords must be stored securely and never returned by the API."
+      ],
+      "applies_to_prior": [],
+      "questions_for_po": [
+        "What are the password rules (minimum length, complexity, maximum length)?",
+        "Should duplicate emails be rejected, and with which status code and message?",
+        "Is email comparison case-insensitive, and should emails be normalised before storing?",
+        "Which hashing algorithm and parameters are required, if the team has a standard?",
+        "What should the success response contain (e.g. user id, name, email) and which status code is expected?",
+        "Is email verification required before a user can log in, or is that out of scope?",
+        "Are there length limits or allowed characters for the name field?",
+        "Is login in scope for this story, or is it a separate story?"
+      ],
+      "validation_rules": [
+        "Name, email and password are all required.",
+        "Email must be in a valid email format (exact rules to be confirmed)."
+      ],
+      "acceptance_criteria": [
+        "Given a valid name, email and password, when the user registers, then the API responds with a success status and the user is created.",
+        "Given a successful registration, then the stored password value differs from the submitted plain-text password and is a hash.",
+        "Given a successful registration, then the response body does not contain the password or the password hash.",
+        "Given any API response that returns user data, then it does not contain the password or the password hash."
+      ],
+      "criteria_from_design": [],
+      "criteria_from_documents": [],
+      "functional_requirements": [
+        "A new user can register by submitting a name, an email and a password.",
+        "On successful registration the system persists the user so that the user can later log in.",
+        "The password is stored only in a secure (hashed) form, never in plain text.",
+        "No API response ever contains the password or its hash."
+      ],
+      "non_functional_requirements": [
+        "Password storage must use a secure one-way hashing approach (security).",
+        "Passwords must not appear in API responses; passwords should also not be written to logs (security)."
+      ]
+    }
+  },
+  "active_criteria": [
+    "Given a valid name, email and password, when the user registers, then the API responds with a success status and the user is created.",
+    "Given a successful registration, then the stored password value differs from the submitted plain-text password and is a hash.",
+    "Given a successful registration, then the response body does not contain the password or the password hash.",
+    "Given any API response that returns user data, then it does not contain the password or the password hash."
+  ],
+  "excluded_criteria": [],
+  "project_decisions": "",
+  "design_screens": [],
+  "design_image_coverage": "Text/design facts only; rendered pixels are not included in this export.",
+  "repository_context": {
+    "index_commit": "8a0ce113c22a8f1deba85e81704e08239bb89f5c",
+    "index_status": "ready",
+    "partial": false,
+    "facts": {
+      "run": {
+        "source": "api",
+        "timings": {
+          "read": 18.92,
+          "sync": 1.221,
+          "embed": 0.019,
+          "graph": 0.056
+        }
+      },
+      "graph": {
+        "files": 12,
+        "unread": {}
+      },
+      "routes": [],
+      "tables": [],
+      "auth_files": [],
+      "invariants": [],
+      "test_roots": [
+        "my-app/src/test"
+      ],
+      "test_helpers": [],
+      "test_runners": [],
+      "test_inventory": {
+        "api": {
+          "files": 1,
+          "roots": {
+            "my-app/src/test/java": 1
+          },
+          "tools": {
+            "JUnit 5 + REST Assured": 1
+          },
+          "by_tool": {
+            "JUnit 5 + REST Assured": {
+              "files": 1,
+              "roots": {
+                "my-app/src/test/java": 1
+              },
+              "examples": [
+                "my-app/src/test/java/com/my/proj/resource/GreetingResourceTest.java"
+              ]
+            }
+          },
+          "configured": [
+            "REST Assured"
+          ]
+        },
+        "unit": {
+          "files": 0,
+          "roots": {},
+          "tools": {},
+          "by_tool": {},
+          "configured": []
+        },
+        "web_e2e": {
+          "files": 0,
+          "roots": {},
+          "tools": {},
+          "by_tool": {},
+          "configured": []
+        },
+        "mobile_e2e": {
+          "files": 0,
+          "roots": {},
+          "tools": {},
+          "by_tool": {},
+          "configured": []
+        }
+      }
+    },
+    "limitation": "Facts describe the indexed revision; repository source is not proof of current HEAD."
+  },
+  "managed_instructions": {
+    "agent": "task-breakdown",
+    "role": "You are a tech lead planning work for a team. Break the story into the smallest number of tasks that still covers it — a task is a unit of work one person picks up, finishes, and can have verified, not a step in a checklist.",
+    "system_override": "",
+    "appended_guidance": "",
+    "version": 0
+  },
+  "repository": "harshvardhanpatil032026-cpu/quarkus-project",
+  "tech_stack": {},
+  "test_strategy": null,
+  "tasks": [],
+  "tests": [],
+  "documents": [],
+  "pull_request": null,
+  "review_context": null,
+  "schema": {
+    "$defs": {
+      "TaskItem": {
+        "properties": {
+          "category": {
+            "title": "Category",
+            "type": "string"
+          },
+          "component": {
+            "default": "other",
+            "title": "Component",
+            "type": "string"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "description": {
+            "default": "",
+            "title": "Description",
+            "type": "string"
+          },
+          "estimated_hours": {
+            "default": 0,
+            "title": "Estimated Hours",
+            "type": "number"
+          }
+        },
+        "required": [
+          "category",
+          "title"
+        ],
+        "title": "TaskItem",
+        "type": "object"
+      }
+    },
+    "properties": {
+      "tasks": {
+        "items": {
+          "$ref": "#/$defs/TaskItem"
+        },
+        "title": "Tasks",
+        "type": "array"
+      },
+      "confidence": {
+        "default": 0,
+        "title": "Confidence",
+        "type": "number"
+      },
+      "replace_task_ids": {
+        "items": {
+          "type": "integer"
+        },
+        "maxItems": 100,
+        "title": "Replace Task Ids",
+        "type": "array"
+      }
+    },
+    "title": "TaskProposal",
+    "type": "object"
+  },
+  "instructions": {
+    "version": "shared-drafting/1/task_planning",
+    "text": "Propose bounded implementation tasks. Preserve existing work. Name replace_task_ids only for explicit proposed replacement of untouched generated work."
+  },
+  "project_guidance": {
+    "business_rules": [],
+    "guardrails": [],
+    "skills": "",
+    "project_documents": "",
+    "lessons": []
+  },
+  "current_artifact": [],
+  "artifact_revision": 2,
+  "run_id": "3a4f767cb7692ad4551ae983c8bdcfa503aa8381585ae557d29d514e238c228e",
+  "input_version": "27fea9c92b9e52d0f872da926714b4c54e9003d5e67a947f6bdc6cde315b065f"
+}

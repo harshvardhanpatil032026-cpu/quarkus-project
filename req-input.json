@@ -1,0 +1,207 @@
+{
+  "phase": "requirements",
+  "story_id": 17,
+  "title": "Register a new user with a hashed password",
+  "description": "As a new user, I want to register with my name, email and password so that I can later log in. Passwords must be stored securely and never returned by the API.",
+  "analysis": {},
+  "active_criteria": [],
+  "excluded_criteria": [],
+  "project_decisions": "",
+  "design_screens": [],
+  "design_image_coverage": "Text/design facts only; rendered pixels are not included in this export.",
+  "repository_context": {
+    "index_commit": "8a0ce113c22a8f1deba85e81704e08239bb89f5c",
+    "index_status": "ready",
+    "partial": false,
+    "facts": {
+      "run": {
+        "source": "api",
+        "timings": {
+          "read": 18.92,
+          "sync": 1.221,
+          "embed": 0.019,
+          "graph": 0.056
+        }
+      },
+      "graph": {
+        "files": 12,
+        "unread": {}
+      },
+      "routes": [],
+      "tables": [],
+      "auth_files": [],
+      "invariants": [],
+      "test_roots": [
+        "my-app/src/test"
+      ],
+      "test_helpers": [],
+      "test_runners": [],
+      "test_inventory": {
+        "api": {
+          "files": 1,
+          "roots": {
+            "my-app/src/test/java": 1
+          },
+          "tools": {
+            "JUnit 5 + REST Assured": 1
+          },
+          "by_tool": {
+            "JUnit 5 + REST Assured": {
+              "files": 1,
+              "roots": {
+                "my-app/src/test/java": 1
+              },
+              "examples": [
+                "my-app/src/test/java/com/my/proj/resource/GreetingResourceTest.java"
+              ]
+            }
+          },
+          "configured": [
+            "REST Assured"
+          ]
+        },
+        "unit": {
+          "files": 0,
+          "roots": {},
+          "tools": {},
+          "by_tool": {},
+          "configured": []
+        },
+        "web_e2e": {
+          "files": 0,
+          "roots": {},
+          "tools": {},
+          "by_tool": {},
+          "configured": []
+        },
+        "mobile_e2e": {
+          "files": 0,
+          "roots": {},
+          "tools": {},
+          "by_tool": {},
+          "configured": []
+        }
+      }
+    },
+    "limitation": "Facts describe the indexed revision; repository source is not proof of current HEAD."
+  },
+  "managed_instructions": {
+    "agent": "requirement-analysis",
+    "role": "You are a senior business analyst. Analyze the Jira story and produce a thorough, structured requirement breakdown.",
+    "system_override": "",
+    "appended_guidance": "",
+    "version": 0
+  },
+  "repository": "harshvardhanpatil032026-cpu/quarkus-project",
+  "tech_stack": {},
+  "test_strategy": null,
+  "tasks": [],
+  "tests": [],
+  "documents": [],
+  "pull_request": null,
+  "review_context": null,
+  "schema": {
+    "additionalProperties": false,
+    "properties": {
+      "functional_requirements": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Functional Requirements",
+        "type": "array"
+      },
+      "non_functional_requirements": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Non Functional Requirements",
+        "type": "array"
+      },
+      "acceptance_criteria": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Acceptance Criteria",
+        "type": "array"
+      },
+      "business_rules": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Business Rules",
+        "type": "array"
+      },
+      "edge_cases": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Edge Cases",
+        "type": "array"
+      },
+      "validation_rules": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Validation Rules",
+        "type": "array"
+      },
+      "questions_for_po": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Questions For Po",
+        "type": "array"
+      },
+      "risks": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Risks",
+        "type": "array"
+      },
+      "criteria_from_design": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Criteria From Design",
+        "type": "array"
+      },
+      "criteria_from_documents": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Criteria From Documents",
+        "type": "array"
+      },
+      "applies_to_prior": {
+        "items": {
+          "type": "string"
+        },
+        "title": "Applies To Prior",
+        "type": "array"
+      },
+      "confidence": {
+        "default": 0,
+        "title": "Confidence",
+        "type": "number"
+      }
+    },
+    "title": "Requirements",
+    "type": "object"
+  },
+  "instructions": {
+    "version": "shared-drafting/1/requirements",
+    "text": "Draft the requirements for the story below, for a business analyst to review.\nUse only the story text, its documents and the project decisions given here;\ndo not invent systems, roles or rules they do not state — put open points in\nquestions_for_po instead. Each acceptance criterion must be checkable by a test\nor a person and state one observable outcome. List in criteria_from_documents\nany criterion a document states. Return JSON matching `schema` as the `draft`\nof a submission, with the `run_id` and `input_version` you were given and a\n`submission_id` of your own that you reuse if you have to resend it.\n"
+  },
+  "project_guidance": {
+    "business_rules": [],
+    "guardrails": [],
+    "skills": "",
+    "project_documents": "",
+    "lessons": []
+  },
+  "current_artifact": null,
+  "artifact_revision": 0,
+  "run_id": "3a4f767cb7692ad4551ae983c8bdcfa503aa8381585ae557d29d514e238c228e",
+  "input_version": "d2bcf7d84292d15a089386a30992661b1b3477617f84334d1adc650c27525795"
+}

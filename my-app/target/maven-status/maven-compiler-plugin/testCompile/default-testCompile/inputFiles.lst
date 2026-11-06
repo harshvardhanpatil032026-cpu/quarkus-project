@@ -1,0 +1,13 @@
+/Users/siddhatech/Documents/Harshvardhan/quarkus/aem-quarkus/my-app/src/test/java/com/my/proj/resource/Criterion1_SuccessfulRegistration.java
+/Users/siddhatech/Documents/Harshvardhan/quarkus/aem-quarkus/my-app/src/test/java/com/my/proj/resource/Criterion2_PasswordHashed.java
+/Users/siddhatech/Documents/Harshvardhan/quarkus/aem-quarkus/my-app/src/test/java/com/my/proj/resource/Criterion3_PasswordNotInResponse.java
+/Users/siddhatech/Documents/Harshvardhan/quarkus/aem-quarkus/my-app/src/test/java/com/my/proj/resource/Criterion4_PasswordNotInUserData.java
+/Users/siddhatech/Documents/Harshvardhan/quarkus/aem-quarkus/my-app/src/test/java/com/my/proj/resource/GreetingResourceIT.java
+/Users/siddhatech/Documents/Harshvardhan/quarkus/aem-quarkus/my-app/src/test/java/com/my/proj/resource/GreetingResourceTest.java
+/Users/siddhatech/Documents/Harshvardhan/quarkus/aem-quarkus/my-app/src/test/java/com/my/proj/resource/RegisterUserDuplicateEmailTest.java
+/Users/siddhatech/Documents/Harshvardhan/quarkus/aem-quarkus/my-app/src/test/java/com/my/proj/resource/RegisterUserInvalidEmailTest.java
+/Users/siddhatech/Documents/Harshvardhan/quarkus/aem-quarkus/my-app/src/test/java/com/my/proj/resource/RegisterUserMissingFieldsTest.java
+/Users/siddhatech/Documents/Harshvardhan/quarkus/aem-quarkus/my-app/src/test/java/com/my/proj/resource/RegisterUserNoPasswordInResponseTest.java
+/Users/siddhatech/Documents/Harshvardhan/quarkus/aem-quarkus/my-app/src/test/java/com/my/proj/resource/RegisterUserPasswordHashedTest.java
+/Users/siddhatech/Documents/Harshvardhan/quarkus/aem-quarkus/my-app/src/test/java/com/my/proj/resource/RegisterUserSuccessTest.java
+/Users/siddhatech/Documents/Harshvardhan/quarkus/aem-quarkus/my-app/src/test/java/com/my/proj/resource/UserEndpointsNoPasswordTest.java

@@ -1,0 +1,41 @@
+{
+  "run_id": "3a4f767cb7692ad4551ae983c8bdcfa503aa8381585ae557d29d514e238c228e",
+  "input_version": "9b1f20a849d5d779ef8661ca4f3c99cb97c5a5263ba9f3c7acd6117e1cbc89a7",
+  "submission_id": "sub-story17-impact-1",
+  "draft": {
+    "summary": "Registration touches the REST layer, a user service that hashes passwords, a user entity/table with a unique email, and tests. The architecture analysis names UserService, UserResource and a User entity (com.my.proj.entity, .service, .resource) and says the entity currently stores the password in plain text. The repository index at commit 8a0ce11 lists no routes, tables or auth files, so it does not confirm those classes exist; treat them as to-be-created or to-be-changed once checked against current HEAD. Persistence stack, hashing library and build file contents are unknown (tech_stack is empty).",
+    "controllers": [
+      "UserResource (com.my.proj.resource): POST registration endpoint returning a response without password or hash"
+    ],
+    "services": [
+      "UserService (com.my.proj.service): validate input, reject duplicate email, hash the password with a salted one-way algorithm (e.g. bcrypt), persist the user"
+    ],
+    "repositories": [
+      "User repository (proposed, com.my.proj.repository): persist and look up users by email"
+    ],
+    "dtos": [
+      "Registration request DTO (name, email, password) with validation",
+      "User response DTO (id, name, email only; no password or hash)"
+    ],
+    "database_tables": [
+      "users: id, name, email (unique constraint), password_hash"
+    ],
+    "configuration": [
+      "Datasource and schema generation or migration settings in application.properties, if not already present",
+      "Hashing parameters (cost factor) if the chosen library needs them"
+    ],
+    "tests": [
+      "New REST Assured test class under my-app/src/test/java/com/my/proj/resource for registration (success, hash stored and differs from plain text, no password or hash in response, missing/blank/malformed fields, duplicate email)",
+      "Test datasource setup and clean-up between tests; no test helpers exist today"
+    ],
+    "dependencies": [
+      "Hashing library (e.g. a bcrypt implementation) if not already in my-app",
+      "Quarkus REST and JSON serialisation extensions, if not already present",
+      "Hibernate ORM/Panache (or equivalent) and a JDBC driver, if not already present",
+      "Hibernate Validator for request validation, if not already present"
+    ],
+    "confidence": 0.5,
+    "complexity_score": 0.4
+  },
+  "instructions_version": "shared-drafting/1/impact"
+}
