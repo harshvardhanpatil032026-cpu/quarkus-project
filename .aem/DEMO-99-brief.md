@@ -75,6 +75,7 @@ The acceptance criteria above were used to generate the tests below, committed a
 - `tests/api/DEMO-99/test-5.txt`
 - `tests/api/DEMO-99/test-6.txt`
 - `tests/api/DEMO-99/test-7.txt`
+- `tests/api/DEMO-99/test-8.txt`
 
 ## Test contract
 
