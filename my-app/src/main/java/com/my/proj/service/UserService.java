@@ -1,7 +1,10 @@
 package com.my.proj.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import org.jboss.logging.Logger;
 
 import com.my.proj.entity.User;
 import com.my.proj.exception.EmailAlreadyExistsException;
@@ -14,6 +17,8 @@ import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class UserService {
+
+    private static final Logger LOG = Logger.getLogger(UserService.class);
 
     private static final String EMAIL = "email";
 
@@ -111,13 +116,74 @@ public class UserService {
         user.setPasswordHash(PasswordHashing.hash(newPassword));
     }
 
+    /**
+     * Changes the user's name and/or email. A null argument leaves that field unchanged; the name
+     * is expected trimmed and the email normalised (see UpdateUserRequest).
+     *
+     * @throws UserNotFoundException if no user has {@code email}
+     * @throws EmailAlreadyExistsException if {@code newEmail} belongs to another user
+     */
+    @Transactional
+    public User updateUser(String email, String newName, String newEmail) {
+        User user = getUserByEmail(email);
+        if (newEmail != null && !newEmail.equals(user.getEmail())) {
+            if (userRepository.count(EMAIL, newEmail) > 0) {
+                throw new EmailAlreadyExistsException(newEmail);
+            }
+            user.setEmail(newEmail);
+        }
+        if (newName != null) {
+            user.setName(newName);
+        }
+        return user;
+    }
+
+    /**
+     * Replaces the password of the user with this email once the current password is confirmed.
+     * Every rule is checked here, so a refusal lists all the broken rules at once. Rules that need
+     * the user's details are checked only after the current password is confirmed, so nothing
+     * about the account is revealed to a caller who does not know it.
+     *
+     * @throws IllegalArgumentException listing every broken rule (400)
+     * @throws InvalidCredentialsException if the user is unknown or the current password is wrong (401)
+     */
+    @Transactional
+    public void changePassword(String email, String currentPassword, String newPassword) {
+        if (currentPassword == null || currentPassword.isBlank()) {
+            List<String> problems = new ArrayList<>();
+            problems.add("currentPassword is required");
+            problems.addAll(PasswordPolicy.formatProblems(newPassword));
+            throw new IllegalArgumentException(String.join("; ", problems));
+        }
+        if (newPassword == null || newPassword.isBlank()) {
+            throw new IllegalArgumentException("newPassword is required");
+        }
+
+        User user = email == null ? null : userRepository.find(EMAIL, email.trim().toLowerCase(Locale.ROOT)).firstResult();
+        // A missing user or hash still costs one bcrypt check, so timing reveals nothing.
+        boolean matches = PasswordHashing.matches(currentPassword, user == null ? null : user.getPasswordHash());
+        if (user == null || !matches) {
+            throw InvalidCredentialsException.forPasswordReset();
+        }
+
+        List<String> problems = PasswordPolicy.problems(newPassword, currentPassword, user.getEmail(), user.getName());
+        if (!problems.isEmpty()) {
+            throw new IllegalArgumentException(String.join("; ", problems));
+        }
+
+        user.setPasswordHash(PasswordHashing.hash(newPassword));
+        // Log the user id only: never the password or its hash.
+        LOG.infof("Password changed for user %s", user.id);
+    }
+
     @Transactional
     public void deleteUserByEmail(String email) {
         if (email == null || email.isBlank()) {
             throw new IllegalArgumentException("Email cannot be null or empty");
         }
-        if (userRepository.delete(EMAIL, email) == 0) {
-            throw new UserNotFoundException(email);
+        String normalised = email.trim().toLowerCase(Locale.ROOT);
+        if (userRepository.delete(EMAIL, normalised) == 0) {
+            throw new UserNotFoundException(normalised);
         }
     }
 }
