@@ -1,25 +1,21 @@
 package com.my.proj.resource;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
-import javax.sql.DataSource;
+import com.my.proj.service.DatabaseService;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 
 @Path("/db")
 public class DatabaseResource {
-    private final DataSource dataSource;
 
-    public DatabaseResource(DataSource dataSource) {
-        this.dataSource = dataSource;
+    private final DatabaseService databaseService;
+
+    public DatabaseResource(DatabaseService databaseService) {
+        this.databaseService = databaseService;
     }
 
     @GET
-    public String testConnection() throws SQLException {
-        try (Connection connection = dataSource.getConnection()) {
-            return "Connected to: " + connection.getCatalog();
-        }
+    public String testConnection() {
+        return "Connected to: " + databaseService.catalogName();
     }
 }

@@ -46,6 +46,19 @@ class ResetPasswordNewPasswordMinLengthTest {
     }
 
     @Test
+    void newPasswordOverBcryptsSeventyTwoByteLimitIsRejectedWith400() {
+        String email = registerUser();
+
+        // 73 ASCII characters is 73 bytes, one more than bcrypt reads.
+        reset(email, "A".repeat(73))
+            .statusCode(400)
+            .body("message", containsString("newPassword must be at most 72 bytes"));
+
+        // Exactly 72 bytes is accepted.
+        reset(email, "B".repeat(72)).statusCode(204);
+    }
+
+    @Test
     void newPasswordOfExactlyTenCharactersIsAccepted() {
         reset(registerUser(), "Ten#Pass10").statusCode(204);
     }
