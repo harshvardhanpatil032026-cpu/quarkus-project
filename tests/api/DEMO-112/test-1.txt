@@ -1,0 +1,33 @@
+package com.my.proj.resource;
+
+import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.http.ContentType;
+import org.junit.jupiter.api.Test;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.equalTo;
+
+@QuarkusTest
+public class Criterion1Test {
+
+    @Test
+    public void testGetUserByEmail() {
+        // Create a user with a specific email
+        User user = new User();
+        user.name = "John Doe";
+        user.email = "john.doe@example.com";
+        given()
+            .contentType(ContentType.JSON)
+            .body(user)
+            .when().post("/users")
+            .then()
+                .statusCode(201);
+
+        // Retrieve the user by email
+        given()
+            .when().get("/users/email/john.doe@example.com")
+            .then()
+                .statusCode(200)
+                .body("name", equalTo("John Doe"))
+                .body("email", equalTo("john.doe@example.com"));
+    }
+}
