@@ -1,0 +1,150 @@
+package com.my.proj.resource;
+
+import com.my.proj.dto.ResetPasswordRequest;
+
+import io.quarkus.elytron.security.common.BcryptUtil;
+import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.http.ContentType;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+/**
+ * Criterion 6: passwords are never stored in plain text, never logged, and the
+ * request DTO's toString() masks both password fields.
+ */
+@QuarkusTest
+public class Criterion6_PasswordsNeverStoredOrLogged {
+
+    private static final String OLD_PASSWORD = "OldP@ss1-" + UUID.randomUUID();
+    private static final String NEW_PASSWORD = "NewP@ss2-" + UUID.randomUUID();
+
+    @Inject
+    EntityManager em;
+
+    private String registerUser() {
+        String email = "reset-" + UUID.randomUUID() + "@example.com";
+        given().contentType(ContentType.JSON)
+            .body(Map.of("name", "Reset Tester", "email", email, "password", OLD_PASSWORD))
+            .when().post("/users")
+            .then().statusCode(201);
+        return email;
+    }
+
+    private io.restassured.response.ValidatableResponse reset(Object email, Object current, Object next) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("email", email);
+        body.put("currentPassword", current);
+        body.put("newPassword", next);
+        return given().contentType(ContentType.JSON).body(body)
+            .when().post("/users/reset-password")
+            .then();
+    }
+
+    private String storedHash(String email) {
+        return (String) em.createNativeQuery("select password_hash from users where email = :e")
+            .setParameter("e", email).getSingleResult();
+    }
+
+    @Test
+    public void storedPasswordAfterResetIsABcryptHashOfTheNewPassword() {
+        String email = registerUser();
+
+        reset(email, OLD_PASSWORD, NEW_PASSWORD).statusCode(204);
+
+        String stored = storedHash(email);
+        assertNotNull(stored);
+        assertFalse(stored.contains(NEW_PASSWORD), "the new password must not be stored in plain text");
+        assertFalse(stored.contains(OLD_PASSWORD), "the old password must not be stored in plain text");
+        assertTrue(stored.startsWith("$2"), "the stored value must be a bcrypt hash, was: " + stored);
+        assertTrue(BcryptUtil.matches(NEW_PASSWORD, stored), "the stored hash must verify the new password");
+    }
+
+    @Test
+    public void requestToStringMasksBothPasswordFields() {
+        ResetPasswordRequest request = new ResetPasswordRequest("user@example.com", OLD_PASSWORD, NEW_PASSWORD);
+
+        String text = request.toString();
+
+        assertFalse(text.contains(OLD_PASSWORD), "toString() must mask currentPassword: " + text);
+        assertFalse(text.contains(NEW_PASSWORD), "toString() must mask newPassword: " + text);
+        assertTrue(text.contains("user@example.com"), "toString() should still show the email: " + text);
+    }
+
+    @Test
+    public void passwordsNeverAppearInTheApplicationLog() {
+        String email = registerUser();
+        List<String> logged = Collections.synchronizedList(new ArrayList<>());
+        Handler capture = new Handler() {
+            @Override
+            public void publish(LogRecord record) {
+                StringBuilder line = new StringBuilder(String.valueOf(record.getMessage()));
+                if (record.getParameters() != null) {
+                    for (Object p : record.getParameters()) {
+                        line.append(' ').append(p);
+                    }
+                }
+                if (record.getThrown() != null) {
+                    line.append(' ').append(record.getThrown());
+                }
+                logged.add(line.toString());
+            }
+
+            @Override
+            public void flush() {
+            }
+
+            @Override
+            public void close() {
+            }
+        };
+        Logger root = Logger.getLogger("");
+        root.addHandler(capture);
+        try {
+            reset(email, "Wrong#Pass9", NEW_PASSWORD).statusCode(401); // wrong current password
+            reset(email, OLD_PASSWORD, OLD_PASSWORD).statusCode(400);  // new same as current
+            reset(email, OLD_PASSWORD, NEW_PASSWORD).statusCode(204);  // success
+        } finally {
+            root.removeHandler(capture);
+        }
+
+        synchronized (logged) {
+            for (String line : logged) {
+                assertFalse(line.contains(OLD_PASSWORD), "the current password was logged: " + line);
+                assertFalse(line.contains(NEW_PASSWORD), "the new password was logged: " + line);
+                assertFalse(line.contains("Wrong#Pass9"), "a submitted password was logged: " + line);
+            }
+        }
+    }
+
+    @Test
+    public void errorResponsesNeverEchoThePasswords() {
+        String email = registerUser();
+
+        reset(email, "Wrong#Pass9", NEW_PASSWORD).statusCode(401)
+            .body(not(containsString("Wrong#Pass9")))
+            .body(not(containsString(NEW_PASSWORD)));
+        reset(email, OLD_PASSWORD, OLD_PASSWORD).statusCode(400)
+            .body(not(containsString(OLD_PASSWORD)));
+        reset("not-an-email", OLD_PASSWORD, NEW_PASSWORD).statusCode(400)
+            .body(not(containsString(OLD_PASSWORD)))
+            .body(not(containsString(NEW_PASSWORD)));
+    }
+}
