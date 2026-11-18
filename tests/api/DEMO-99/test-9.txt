@@ -1,0 +1,38 @@
+package com.my.proj.resource;
+
+import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.http.ContentType;
+import org.junit.jupiter.api.Test;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.equalTo;
+
+@QuarkusTest
+public class Criterion1_ValidResetReturns204 {
+
+    private String registerUser(String email, String password) {
+        given().contentType(ContentType.JSON)
+            .body(Map.of("name", "Tester", "email", email, "password", password))
+            .when().post("/users")
+            .then().statusCode(201);
+        return email;
+    }
+
+    @Test
+    public void validRequestWithCorrectCurrentPasswordReturns204() {
+        String email = registerUser("user@example.com", "OldP@ss1");
+        Map<String, Object> resetRequest = new HashMap<>();
+        resetRequest.put("email", email);
+        resetRequest.put("currentPassword", "OldP@ss1");
+        resetRequest.put("newPassword", "NewP@ss2");
+
+        given().contentType(ContentType.JSON)
+            .body(resetRequest)
+            .when().post("/users/reset-password")
+            .then().statusCode(204);
+    }
+}
