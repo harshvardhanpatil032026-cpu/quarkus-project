@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @QuarkusTest
-public class Criterion4_JwtExpiresAfter3000Seconds {
+public class Criterion4_JwtExpiresAfter3600Seconds {
 
     // Assumed contract: POST /users/login with {"email","password"} returns {"token": "<jwt>"}.
     private static final String LOGIN_PATH = "/users/login";
@@ -61,7 +61,7 @@ public class Criterion4_JwtExpiresAfter3000Seconds {
         return Long.parseLong(m.group(1));
     }
 
-    private static final long EXPECTED_LIFETIME_SECONDS = 3000;
+    private static final long EXPECTED_LIFETIME_SECONDS = 3600;
 
     @Test
     public void jwtHasAnExpirationClaim() {
@@ -71,7 +71,7 @@ public class Criterion4_JwtExpiresAfter3000Seconds {
     }
 
     @Test
-    public void jwtLifetimeIsExactly3000Seconds() {
+    public void jwtLifetimeIsExactly3600Seconds() {
         String claims = claimsOf(loginToken(registerUser()));
 
         long lifetime = numericClaim(claims, "exp") - numericClaim(claims, "iat");
@@ -80,7 +80,7 @@ public class Criterion4_JwtExpiresAfter3000Seconds {
     }
 
     @Test
-    public void jwtExpiryIsAbout3000SecondsFromNow() {
+    public void jwtExpiryIsAbout3600SecondsFromNow() {
         long before = System.currentTimeMillis() / 1000;
         String claims = claimsOf(loginToken(registerUser()));
         long after = System.currentTimeMillis() / 1000;
