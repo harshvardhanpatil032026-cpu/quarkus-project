@@ -43,6 +43,13 @@ public class UserResource {
         return UserResponse.from(userService.getUserById(id));
     }
 
+    /** 200 with the user's details; 404 "User not found with email: ..." when none matches (case-insensitive). */
+    @GET
+    @Path("/email/{email}")
+    public UserResponse getUserByEmail(@PathParam("email") String email) {
+        return UserResponse.from(userService.getUserByEmail(email));
+    }
+
     @POST
     public Response createUser(@Valid RegisterUserRequest request) {
         User created = userService.createUser(request.name(), request.email(), request.password());

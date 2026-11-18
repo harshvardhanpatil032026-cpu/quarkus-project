@@ -1,0 +1,33 @@
+package com.my.proj.resource;
+
+import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.http.ContentType;
+import org.junit.jupiter.api.Test;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.equalTo;
+
+@QuarkusTest
+public class Criterion3Test {
+
+    @Test
+    public void testGetUserByEmailWithSpecialCharactersAndCaseVariations() {
+        // Create a user with a specific email containing special characters and mixed case
+        User user = new User();
+        user.name = "Jane Doe";
+        user.email = "jane.doe+test@EXAMPLE.com";
+        given()
+            .contentType(ContentType.JSON)
+            .body(user)
+            .when().post("/users")
+            .then()
+                .statusCode(201);
+
+        // Retrieve the user by email with different case and special characters
+        given()
+            .when().get("/users/email/JANE.DOE+TEST@example.com")
+            .then()
+                .statusCode(200)
+                .body("name", equalTo("Jane Doe"))
+                .body("email", equalTo("jane.doe+test@EXAMPLE.com"));
+    }
+}
