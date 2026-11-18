@@ -47,6 +47,7 @@ public class UserService {
             throw new IllegalArgumentException("Email cannot be null or empty");
         }
         String normalised = email.trim().toLowerCase(Locale.ROOT);
+        String domain = normalised.substring(normalised.indexOf('@') + 1);
         User user = userRepository.find(EMAIL, normalised).firstResult();
         if (user == null) {
             throw new UserNotFoundException(normalised);
