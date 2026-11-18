@@ -1,6 +1,7 @@
 package com.my.proj.resource;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
@@ -16,7 +17,7 @@ public class DatabaseResource {
     }
 
     @GET
-    public String testConnection() throws Exception {
+    public String testConnection() throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             return "Connected to: " + connection.getCatalog();
         }
