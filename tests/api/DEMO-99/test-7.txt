@@ -33,8 +33,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @QuarkusTest
 public class Criterion6_PasswordsNeverStoredOrLogged {
 
-    private static final String OLD_PASSWORD = "OldP@ss1-" + UUID.randomUUID();
-    private static final String NEW_PASSWORD = "NewP@ss2-" + UUID.randomUUID();
+    private static final String OLD_PASSWORD = "OldP@ssw0rd1-" + UUID.randomUUID();
+    private static final String NEW_PASSWORD = "NewP@ssw0rd2-" + UUID.randomUUID();
 
     @Inject
     EntityManager em;

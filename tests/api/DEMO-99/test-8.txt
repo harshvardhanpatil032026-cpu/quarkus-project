@@ -27,8 +27,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @QuarkusTest
 public class Criterion8_ResetRunsInOneTransaction {
 
-    private static final String OLD_PASSWORD = "OldP@ss1";
-    private static final String NEW_PASSWORD = "NewP@ss2";
+    private static final String OLD_PASSWORD = "OldP@ssw0rd1";
+    private static final String NEW_PASSWORD = "NewP@ssw0rd2";
 
     @Inject
     EntityManager em;

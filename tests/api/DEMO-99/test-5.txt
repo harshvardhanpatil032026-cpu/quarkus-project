@@ -16,8 +16,8 @@ import static org.hamcrest.Matchers.notNullValue;
 @QuarkusTest
 public class Criterion5_BadCredentialsReturn401 {
 
-    private static final String OLD_PASSWORD = "OldP@ss1";
-    private static final String NEW_PASSWORD = "NewP@ss2";
+    private static final String OLD_PASSWORD = "OldP@ssw0rd1";
+    private static final String NEW_PASSWORD = "NewP@ssw0rd2";
 
     /** Registers a user through POST /users and returns the email it was registered with. */
     private String registerUser(String email) {

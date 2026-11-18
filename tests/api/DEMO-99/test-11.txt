@@ -11,14 +11,14 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
 @QuarkusTest
-public class Criterion3_InvalidInputReturns400 {
+public class Criterion3_InvalidInputReturns400Basic {
 
     @Test
     public void invalidInputsReturn400() {
         Map<String, Object> resetRequest = new HashMap<>();
         resetRequest.put("email", "invalid-email");
-        resetRequest.put("currentPassword", "OldP@ss1");
-        resetRequest.put("newPassword", "NewP@ss2");
+        resetRequest.put("currentPassword", "OldP@ssw0rd1");
+        resetRequest.put("newPassword", "NewP@ssw0rd2");
 
         given().contentType(ContentType.JSON)
             .body(resetRequest)

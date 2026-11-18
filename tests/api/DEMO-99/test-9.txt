@@ -12,7 +12,7 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
 @QuarkusTest
-public class Criterion1_ValidResetReturns204 {
+public class Criterion1_ValidResetReturns204Basic {
 
     private String registerUser(String email, String password) {
         given().contentType(ContentType.JSON)
@@ -24,11 +24,11 @@ public class Criterion1_ValidResetReturns204 {
 
     @Test
     public void validRequestWithCorrectCurrentPasswordReturns204() {
-        String email = registerUser("user@example.com", "OldP@ss1");
+        String email = registerUser("reset-" + UUID.randomUUID() + "@example.com", "OldP@ssw0rd1");
         Map<String, Object> resetRequest = new HashMap<>();
         resetRequest.put("email", email);
-        resetRequest.put("currentPassword", "OldP@ss1");
-        resetRequest.put("newPassword", "NewP@ss2");
+        resetRequest.put("currentPassword", "OldP@ssw0rd1");
+        resetRequest.put("newPassword", "NewP@ssw0rd2");
 
         given().contentType(ContentType.JSON)
             .body(resetRequest)

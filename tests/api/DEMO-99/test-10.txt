@@ -12,7 +12,7 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
 @QuarkusTest
-public class Criterion2_EmailIsTrimmedAndLowercased {
+public class Criterion2_EmailIsTrimmedAndLowercasedBasic {
 
     private String registerUser(String email, String password) {
         given().contentType(ContentType.JSON)
@@ -24,11 +24,13 @@ public class Criterion2_EmailIsTrimmedAndLowercased {
 
     @Test
     public void emailIsTrimmedAndLowercased() {
-        String registeredEmail = registerUser("  User@Example.com ", "OldP@ss1");
+        String local = "reset-" + UUID.randomUUID();
+        // Registration does not trim before @Email, so register mixed case only; the reset adds the spaces.
+        String registeredEmail = registerUser("Reset-" + local.substring(6).toUpperCase() + "@Example.com", "OldP@ssw0rd1");
         Map<String, Object> resetRequest = new HashMap<>();
-        resetRequest.put("email", " user@example.com ");
-        resetRequest.put("currentPassword", "OldP@ss1");
-        resetRequest.put("newPassword", "NewP@ss2");
+        resetRequest.put("email", " " + local + "@example.com ");
+        resetRequest.put("currentPassword", "OldP@ssw0rd1");
+        resetRequest.put("newPassword", "NewP@ssw0rd2");
 
         given().contentType(ContentType.JSON)
             .body(resetRequest)
