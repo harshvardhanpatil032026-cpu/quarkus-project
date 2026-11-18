@@ -35,6 +35,25 @@ public class UserService {
         return user;
     }
 
+    /**
+     * Finds the user registered with this email. The lookup is case-insensitive: the email is
+     * trimmed and lower-cased the same way {@link #createUser} stores it.
+     *
+     * @throws IllegalArgumentException if the email is blank
+     * @throws UserNotFoundException if no user has this email
+     */
+    public User getUserByEmail(String email) {
+        if (email == null || email.isBlank()) {
+            throw new IllegalArgumentException("Email cannot be null or empty");
+        }
+        String normalised = email.trim().toLowerCase(Locale.ROOT);
+        User user = userRepository.find(EMAIL, normalised).firstResult();
+        if (user == null) {
+            throw new UserNotFoundException(normalised);
+        }
+        return user;
+    }
+
     @Transactional
     public User createUser(String name, String email, String password) {
         if (name == null || name.isBlank()) {
