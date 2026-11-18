@@ -2,24 +2,18 @@ package com.my.proj.resource;
 
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
-import io.restassured.response.ValidatableResponse;
+import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /** DEMO-111: from the generated spec tests/api/DEMO-90/test-1.txt (criterion 1). */
 @QuarkusTest
-public class LoginAcceptsEmailAndPasswordTest {
+class LoginAcceptsEmailAndPasswordTest {
 
     // Assumed contract: POST /users/login with {"email","password"} returns {"token": "<jwt>"}.
     private static final String LOGIN_PATH = "/users/login";
@@ -35,59 +29,40 @@ public class LoginAcceptsEmailAndPasswordTest {
         return email;
     }
 
-    private ValidatableResponse login(Object email, Object password) {
+    private Response login(Object email, Object password) {
         Map<String, Object> body = new HashMap<>();
         body.put("email", email);
         body.put("password", password);
         return given().contentType(ContentType.JSON).body(body)
-            .when().post(LOGIN_PATH)
-            .then();
-    }
-
-    private String loginToken(String email) {
-        return login(email, PASSWORD).statusCode(200).extract().path("token");
-    }
-
-    /** Decodes the claims of a JWT without verifying the signature. */
-    private String claimsOf(String jwt) {
-        String[] parts = jwt.split("\\.");
-        assertEquals(3, parts.length, "a JWT has three dot-separated parts");
-        return new String(Base64.getUrlDecoder().decode(parts[1]));
-    }
-
-    private long numericClaim(String claims, String name) {
-        java.util.regex.Matcher m = java.util.regex.Pattern
-            .compile("\"" + name + "\"\\s*:\\s*(\\d+)").matcher(claims);
-        assertFalse(!m.find(), "claim '" + name + "' is present");
-        return Long.parseLong(m.group(1));
+            .when().post(LOGIN_PATH);
     }
 
     @Test
-    public void postWithEmailAndPasswordIsAccepted() {
+    void postWithEmailAndPasswordIsAccepted() {
         String email = registerUser();
 
-        login(email, PASSWORD).statusCode(200);
+        login(email, PASSWORD).then().statusCode(200);
     }
 
     @Test
-    public void emailIsMatchedAfterTrimmingAndLowercasing() {
+    void emailIsMatchedAfterTrimmingAndLowercasing() {
         String email = registerUser();
 
-        login("  " + email.toUpperCase() + "  ", PASSWORD).statusCode(200);
+        login("  " + email.toUpperCase() + "  ", PASSWORD).then().statusCode(200);
     }
 
     @Test
-    public void missingEmailIsRejectedWith400() {
-        login(null, PASSWORD).statusCode(400);
+    void missingEmailIsRejectedWith400() {
+        login(null, PASSWORD).then().statusCode(400);
     }
 
     @Test
-    public void blankPasswordIsRejectedWith400() {
-        login(registerUser(), "").statusCode(400);
+    void blankPasswordIsRejectedWith400() {
+        login(registerUser(), "").then().statusCode(400);
     }
 
     @Test
-    public void badlyFormattedEmailIsRejectedWith400() {
-        login("not-an-email", PASSWORD).statusCode(400);
+    void badlyFormattedEmailIsRejectedWith400() {
+        login("not-an-email", PASSWORD).then().statusCode(400);
     }
 }

@@ -32,18 +32,20 @@ public class AuthService {
         User user = userRepository.find("email", email.trim().toLowerCase(Locale.ROOT)).firstResult();
 
         // A missing user or hash still costs one bcrypt check, so timing reveals nothing.
-        if (!PasswordHashing.matches(password, user == null ? null : user.passwordHash)) {
-            // Log the reason, but never the email, password or hash.
+        boolean matches = PasswordHashing.matches(password, user == null ? null : user.getPasswordHash());
+        if (user == null || !matches) {
+            // Log the reason with fixed messages only: nothing from the request or the account.
             if (user == null) {
                 LOG.debug("Login rejected: unknown account");
+            } else if (user.getPasswordHash() == null) {
+                LOG.debug("Login rejected: account has no password hash");
             } else {
-                LOG.debugf("Login rejected for user id %d: %s", user.id,
-                        user.passwordHash == null ? "account has no password hash" : "password mismatch");
+                LOG.debug("Login rejected: password mismatch");
             }
             throw InvalidCredentialsException.forLogin();
         }
 
-        LOG.debugf("Login succeeded for user id %d", user.id);
+        LOG.debug("Login succeeded");
         return LoginResponse.bearer(tokenService.issueToken(user), tokenService.lifespanSeconds());
     }
 }

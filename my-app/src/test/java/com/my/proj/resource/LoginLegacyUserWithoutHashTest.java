@@ -26,11 +26,11 @@ class LoginLegacyUserWithoutHashTest {
     @Transactional
     String createLegacyUser() {
         User user = new User();
-        user.name = "Legacy";
-        user.email = "legacy-" + UUID.randomUUID() + "@example.com";
-        user.passwordHash = null;
+        user.setName("Legacy");
+        user.setEmail("legacy-" + UUID.randomUUID() + "@example.com");
+        user.setPasswordHash(null);
         userRepository.persist(user);
-        return user.email;
+        return user.getEmail();
     }
 
     @Test

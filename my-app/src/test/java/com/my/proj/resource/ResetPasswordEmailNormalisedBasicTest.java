@@ -9,11 +9,10 @@ import java.util.Map;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.equalTo;
 
 /** DEMO-104: from the generated spec tests/api/DEMO-99/test-10.txt. */
 @QuarkusTest
-public class ResetPasswordEmailNormalisedBasicTest {
+class ResetPasswordEmailNormalisedBasicTest {
 
     private String registerUser(String email, String password) {
         given().contentType(ContentType.JSON)
@@ -24,10 +23,10 @@ public class ResetPasswordEmailNormalisedBasicTest {
     }
 
     @Test
-    public void emailIsTrimmedAndLowercased() {
+    void emailIsTrimmedAndLowercased() {
         String local = "reset-" + UUID.randomUUID();
         // Registration does not trim before @Email, so register mixed case only; the reset adds the spaces.
-        String registeredEmail = registerUser("Reset-" + local.substring(6).toUpperCase() + "@Example.com", "OldP@ssw0rd1");
+        registerUser("Reset-" + local.substring(6).toUpperCase() + "@Example.com", "OldP@ssw0rd1");
         Map<String, Object> resetRequest = new HashMap<>();
         resetRequest.put("email", " " + local + "@example.com ");
         resetRequest.put("currentPassword", "OldP@ssw0rd1");

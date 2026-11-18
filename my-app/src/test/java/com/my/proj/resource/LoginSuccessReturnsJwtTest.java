@@ -13,13 +13,12 @@ import java.util.UUID;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /** DEMO-111: from the generated spec tests/api/DEMO-90/test-2.txt (criterion 2). */
 @QuarkusTest
-public class LoginSuccessReturnsJwtTest {
+class LoginSuccessReturnsJwtTest {
 
     // Assumed contract: POST /users/login with {"email","password"} returns {"token": "<jwt>"}.
     private static final String LOGIN_PATH = "/users/login";
@@ -55,15 +54,8 @@ public class LoginSuccessReturnsJwtTest {
         return new String(Base64.getUrlDecoder().decode(parts[1]));
     }
 
-    private long numericClaim(String claims, String name) {
-        java.util.regex.Matcher m = java.util.regex.Pattern
-            .compile("\"" + name + "\"\\s*:\\s*(\\d+)").matcher(claims);
-        assertFalse(!m.find(), "claim '" + name + "' is present");
-        return Long.parseLong(m.group(1));
-    }
-
     @Test
-    public void successfulLoginReturnsAJwtInTheBody() {
+    void successfulLoginReturnsAJwtInTheBody() {
         String email = registerUser();
 
         String token = loginToken(email);
@@ -72,7 +64,7 @@ public class LoginSuccessReturnsJwtTest {
     }
 
     @Test
-    public void jwtCarriesTheAuthenticatedUsersIdentity() {
+    void jwtCarriesTheAuthenticatedUsersIdentity() {
         String email = registerUser();
 
         String claims = claimsOf(loginToken(email));
@@ -82,7 +74,7 @@ public class LoginSuccessReturnsJwtTest {
     }
 
     @Test
-    public void responseNeverIncludesThePasswordOrItsHash() {
+    void responseNeverIncludesThePasswordOrItsHash() {
         String email = registerUser();
 
         login(email, PASSWORD).statusCode(200)

@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 /** DEMO-104: from the generated spec tests/api/DEMO-99/test-7.txt. */
 @QuarkusTest
-public class ResetPasswordNeverStoredOrLoggedTest {
+class ResetPasswordNeverStoredOrLoggedTest {
 
     private static final String OLD_PASSWORD = "OldP@ssw0rd1-" + UUID.randomUUID();
     private static final String NEW_PASSWORD = "NewP@ssw0rd2-" + UUID.randomUUID();
@@ -65,7 +65,7 @@ public class ResetPasswordNeverStoredOrLoggedTest {
     }
 
     @Test
-    public void storedPasswordAfterResetIsABcryptHashOfTheNewPassword() {
+    void storedPasswordAfterResetIsABcryptHashOfTheNewPassword() {
         String email = registerUser();
 
         reset(email, OLD_PASSWORD, NEW_PASSWORD).statusCode(204);
@@ -79,7 +79,7 @@ public class ResetPasswordNeverStoredOrLoggedTest {
     }
 
     @Test
-    public void requestToStringMasksBothPasswordFields() {
+    void requestToStringMasksBothPasswordFields() {
         ResetPasswordRequest request = new ResetPasswordRequest("user@example.com", OLD_PASSWORD, NEW_PASSWORD);
 
         String text = request.toString();
@@ -90,30 +90,32 @@ public class ResetPasswordNeverStoredOrLoggedTest {
     }
 
     @Test
-    public void passwordsNeverAppearInTheApplicationLog() {
+    void passwordsNeverAppearInTheApplicationLog() {
         String email = registerUser();
         List<String> logged = Collections.synchronizedList(new ArrayList<>());
         Handler capture = new Handler() {
             @Override
-            public void publish(LogRecord record) {
-                StringBuilder line = new StringBuilder(String.valueOf(record.getMessage()));
-                if (record.getParameters() != null) {
-                    for (Object p : record.getParameters()) {
+            public void publish(LogRecord logRecord) {
+                StringBuilder line = new StringBuilder(String.valueOf(logRecord.getMessage()));
+                if (logRecord.getParameters() != null) {
+                    for (Object p : logRecord.getParameters()) {
                         line.append(' ').append(p);
                     }
                 }
-                if (record.getThrown() != null) {
-                    line.append(' ').append(record.getThrown());
+                if (logRecord.getThrown() != null) {
+                    line.append(' ').append(logRecord.getThrown());
                 }
                 logged.add(line.toString());
             }
 
             @Override
             public void flush() {
+                // Nothing is buffered: publish() stores each record immediately.
             }
 
             @Override
             public void close() {
+                // No resources to release.
             }
         };
         Logger root = Logger.getLogger("");
@@ -136,7 +138,7 @@ public class ResetPasswordNeverStoredOrLoggedTest {
     }
 
     @Test
-    public void errorResponsesNeverEchoThePasswords() {
+    void errorResponsesNeverEchoThePasswords() {
         String email = registerUser();
 
         reset(email, "Wrong#Pass9", NEW_PASSWORD).statusCode(401)

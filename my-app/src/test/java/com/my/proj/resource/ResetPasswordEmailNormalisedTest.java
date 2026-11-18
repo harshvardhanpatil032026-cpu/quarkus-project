@@ -8,14 +8,10 @@ import java.util.Map;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.notNullValue;
 
 /** DEMO-104: from the generated spec tests/api/DEMO-99/test-2.txt. */
 @QuarkusTest
-public class ResetPasswordEmailNormalisedTest {
+class ResetPasswordEmailNormalisedTest {
 
     private static final String OLD_PASSWORD = "OldP@ssw0rd1";
     private static final String NEW_PASSWORD = "NewP@ssw0rd2";
@@ -44,7 +40,7 @@ public class ResetPasswordEmailNormalisedTest {
     }
 
     @Test
-    public void emailWithSurroundingSpacesAndUpperCaseIsMatched() {
+    void emailWithSurroundingSpacesAndUpperCaseIsMatched() {
         String email = registerUser(uniqueEmail());
 
         reset("  " + email.toUpperCase() + "  ", OLD_PASSWORD, NEW_PASSWORD)
@@ -52,7 +48,7 @@ public class ResetPasswordEmailNormalisedTest {
     }
 
     @Test
-    public void mixedCaseEmailIsMatched() {
+    void mixedCaseEmailIsMatched() {
         String email = registerUser(uniqueEmail());
         String mixed = email.substring(0, 1).toUpperCase() + email.substring(1);
 

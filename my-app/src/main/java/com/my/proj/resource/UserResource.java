@@ -9,7 +9,6 @@ import com.my.proj.dto.UserResponse;
 import com.my.proj.entity.User;
 import com.my.proj.service.UserService;
 
-import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.Consumes;
@@ -27,8 +26,11 @@ import jakarta.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class UserResource {
 
-    @Inject
-    UserService userService;
+    private final UserService userService;
+
+    public UserResource(UserService userService) {
+        this.userService = userService;
+    }
 
     @GET
     public List<UserResponse> getUsers() {

@@ -9,11 +9,10 @@ import java.util.Map;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.equalTo;
 
 /** DEMO-104: from the generated spec tests/api/DEMO-99/test-12.txt. */
 @QuarkusTest
-public class ResetPasswordSamePasswordBasicTest {
+class ResetPasswordSamePasswordBasicTest {
 
     private String registerUser(String email, String password) {
         given().contentType(ContentType.JSON)
@@ -24,7 +23,7 @@ public class ResetPasswordSamePasswordBasicTest {
     }
 
     @Test
-    public void samePasswordReturns400() {
+    void samePasswordReturns400() {
         String email = registerUser("reset-" + UUID.randomUUID() + "@example.com", "OldP@ssw0rd1");
         Map<String, Object> resetRequest = new HashMap<>();
         resetRequest.put("email", email);

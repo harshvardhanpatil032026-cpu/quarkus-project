@@ -30,16 +30,16 @@ class ResetPasswordLegacyUserWithoutHashTest {
     @Transactional
     String createLegacyUser() {
         User user = new User();
-        user.name = "Legacy";
-        user.email = "legacy-reset-" + UUID.randomUUID() + "@example.com";
-        user.passwordHash = null;
+        user.setName("Legacy");
+        user.setEmail("legacy-reset-" + UUID.randomUUID() + "@example.com");
+        user.setPasswordHash(null);
         userRepository.persist(user);
-        return user.email;
+        return user.getEmail();
     }
 
     @Transactional
     String storedHash(String email) {
-        return userRepository.find("email", email).firstResult().passwordHash;
+        return userRepository.find("email", email).firstResult().getPasswordHash();
     }
 
     @Test

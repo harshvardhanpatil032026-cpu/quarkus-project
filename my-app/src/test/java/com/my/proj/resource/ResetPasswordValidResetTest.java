@@ -8,14 +8,11 @@ import java.util.Map;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.notNullValue;
 
 /** DEMO-104: from the generated spec tests/api/DEMO-99/test-1.txt. */
 @QuarkusTest
-public class ResetPasswordValidResetTest {
+class ResetPasswordValidResetTest {
 
     private static final String OLD_PASSWORD = "OldP@ssw0rd1";
     private static final String NEW_PASSWORD = "NewP@ssw0rd2";
@@ -44,7 +41,7 @@ public class ResetPasswordValidResetTest {
     }
 
     @Test
-    public void validResetReturns204AndNoBody() {
+    void validResetReturns204AndNoBody() {
         String email = registerUser(uniqueEmail());
 
         reset(email, OLD_PASSWORD, NEW_PASSWORD)
@@ -53,7 +50,7 @@ public class ResetPasswordValidResetTest {
     }
 
     @Test
-    public void validResetCanBeRepeatedWithTheNewPasswordAsCurrent() {
+    void validResetCanBeRepeatedWithTheNewPasswordAsCurrent() {
         String email = registerUser(uniqueEmail());
         reset(email, OLD_PASSWORD, NEW_PASSWORD).statusCode(204);
 

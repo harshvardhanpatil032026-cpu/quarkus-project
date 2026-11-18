@@ -20,13 +20,14 @@ import java.util.UUID;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** Criterion 8: the password update runs in a single transaction. */
 /** DEMO-104: from the generated spec tests/api/DEMO-99/test-8.txt. */
 @QuarkusTest
-public class ResetPasswordTransactionTest {
+class ResetPasswordTransactionTest {
 
     private static final String OLD_PASSWORD = "OldP@ssw0rd1";
     private static final String NEW_PASSWORD = "NewP@ssw0rd2";
@@ -59,7 +60,7 @@ public class ResetPasswordTransactionTest {
     }
 
     @Test
-    public void resetPasswordIsTransactional() {
+    void resetPasswordIsTransactional() {
         List<Method> methods = Arrays.stream(UserService.class.getDeclaredMethods())
             .filter(m -> m.getName().equals("resetPassword"))
             .toList();
@@ -78,7 +79,7 @@ public class ResetPasswordTransactionTest {
     }
 
     @Test
-    public void rejectedResetsLeaveTheStoredHashUntouched() {
+    void rejectedResetsLeaveTheStoredHashUntouched() {
         String email = registerUser();
         String before = storedHash(email);
 
@@ -91,7 +92,7 @@ public class ResetPasswordTransactionTest {
     }
 
     @Test
-    public void successfulResetCommitsTheNewHash() {
+    void successfulResetCommitsTheNewHash() {
         String email = registerUser();
         String before = storedHash(email);
 
@@ -99,7 +100,7 @@ public class ResetPasswordTransactionTest {
 
         // Read back in a fresh query, after the request's transaction has ended.
         String after = storedHash(email);
-        assertFalse(before.equals(after), "the stored hash must change after a successful reset");
+        assertNotEquals(before, after, "the stored hash must change after a successful reset");
         assertTrue(BcryptUtil.matches(NEW_PASSWORD, after), "the committed hash must verify the new password");
     }
 }

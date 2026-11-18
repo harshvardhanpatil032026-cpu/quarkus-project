@@ -23,8 +23,8 @@ public class TokenService {
         Instant issuedAt = Instant.now();
         return Jwt.issuer(config.issuer())
                 .subject(String.valueOf(user.id))
-                .upn(user.email)
-                .claim("name", user.name)
+                .upn(user.getEmail())
+                .claim("name", user.getName())
                 .groups(Set.of("user"))
                 .issuedAt(issuedAt)
                 .expiresAt(issuedAt.plus(config.lifespan()))

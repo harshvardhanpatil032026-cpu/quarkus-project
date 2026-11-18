@@ -8,14 +8,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.equalTo;
 
 /** DEMO-104: from the generated spec tests/api/DEMO-99/test-11.txt. */
 @QuarkusTest
-public class ResetPasswordInvalidInputBasicTest {
+class ResetPasswordInvalidInputBasicTest {
 
     @Test
-    public void invalidInputsReturn400() {
+    void invalidInputsReturn400() {
         Map<String, Object> resetRequest = new HashMap<>();
         resetRequest.put("email", "invalid-email");
         resetRequest.put("currentPassword", "OldP@ssw0rd1");

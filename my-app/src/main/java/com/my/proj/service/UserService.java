@@ -10,14 +10,18 @@ import com.my.proj.exception.UserNotFoundException;
 import com.my.proj.repository.UserRepository;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
 public class UserService {
 
-    @Inject
-    UserRepository userRepository;
+    private static final String EMAIL = "email";
+
+    private final UserRepository userRepository;
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     public List<User> getAllUsers() {
         return userRepository.listAll();
@@ -43,14 +47,14 @@ public class UserService {
             throw new IllegalArgumentException("Password cannot be null or empty");
         }
         email = email.trim().toLowerCase(Locale.ROOT);
-        if (userRepository.count("email", email) > 0) {
+        if (userRepository.count(EMAIL, email) > 0) {
             throw new EmailAlreadyExistsException(email);
         }
         User user = new User();
-        user.name = name;
-        user.email = email;
+        user.setName(name);
+        user.setEmail(email);
         // Salted, adaptive bcrypt hash; the plain-text password is never stored or logged.
-        user.passwordHash = PasswordHashing.hash(password);
+        user.setPasswordHash(PasswordHashing.hash(password));
         userRepository.persist(user);
         return user;
     }
@@ -78,12 +82,13 @@ public class UserService {
             throw new IllegalArgumentException("New password must be different from the current password");
         }
 
-        User user = userRepository.find("email", email.trim().toLowerCase(Locale.ROOT)).firstResult();
+        User user = userRepository.find(EMAIL, email.trim().toLowerCase(Locale.ROOT)).firstResult();
         // A missing user or hash still costs one bcrypt check, so timing reveals nothing.
-        if (!PasswordHashing.matches(currentPassword, user == null ? null : user.passwordHash)) {
+        boolean matches = PasswordHashing.matches(currentPassword, user == null ? null : user.getPasswordHash());
+        if (user == null || !matches) {
             throw InvalidCredentialsException.forPasswordReset();
         }
-        user.passwordHash = PasswordHashing.hash(newPassword);
+        user.setPasswordHash(PasswordHashing.hash(newPassword));
     }
 
     @Transactional
@@ -91,7 +96,7 @@ public class UserService {
         if (email == null || email.isBlank()) {
             throw new IllegalArgumentException("Email cannot be null or empty");
         }
-        if (userRepository.delete("email", email) == 0) {
+        if (userRepository.delete(EMAIL, email) == 0) {
             throw new UserNotFoundException(email);
         }
     }
