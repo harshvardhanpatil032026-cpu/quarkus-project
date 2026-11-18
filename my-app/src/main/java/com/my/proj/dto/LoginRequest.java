@@ -1,5 +1,7 @@
 package com.my.proj.dto;
 
+import java.util.Locale;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
@@ -10,7 +12,7 @@ public record LoginRequest(
     /** Emails are stored trimmed and lower-cased, so normalise before validation and lookup. */
     public LoginRequest {
         if (email != null) {
-            email = email.trim().toLowerCase();
+            email = email.trim().toLowerCase(Locale.ROOT);
         }
     }
 

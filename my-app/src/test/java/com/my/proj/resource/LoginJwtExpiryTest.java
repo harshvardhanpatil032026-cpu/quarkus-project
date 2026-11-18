@@ -11,15 +11,12 @@ import java.util.Map;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /** DEMO-111: from the generated spec tests/api/DEMO-90/test-4.txt (criterion 4). */
 @QuarkusTest
-public class LoginJwtExpiryTest {
+class LoginJwtExpiryTest {
 
     // Assumed contract: POST /users/login with {"email","password"} returns {"token": "<jwt>"}.
     private static final String LOGIN_PATH = "/users/login";
@@ -65,14 +62,14 @@ public class LoginJwtExpiryTest {
     private static final long EXPECTED_LIFETIME_SECONDS = 3600;
 
     @Test
-    public void jwtHasAnExpirationClaim() {
+    void jwtHasAnExpirationClaim() {
         String claims = claimsOf(loginToken(registerUser()));
 
         numericClaim(claims, "exp");
     }
 
     @Test
-    public void jwtLifetimeIsExactly3600Seconds() {
+    void jwtLifetimeIsExactly3600Seconds() {
         String claims = claimsOf(loginToken(registerUser()));
 
         long lifetime = numericClaim(claims, "exp") - numericClaim(claims, "iat");
@@ -81,7 +78,7 @@ public class LoginJwtExpiryTest {
     }
 
     @Test
-    public void jwtExpiryIsAbout3600SecondsFromNow() {
+    void jwtExpiryIsAbout3600SecondsFromNow() {
         long before = System.currentTimeMillis() / 1000;
         String claims = claimsOf(loginToken(registerUser()));
         long after = System.currentTimeMillis() / 1000;

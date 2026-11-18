@@ -1,0 +1,60 @@
+package com.my.proj.resource;
+
+import io.quarkus.test.junit.QuarkusTest;
+import io.restassured.http.ContentType;
+import org.junit.jupiter.api.Test;
+
+import java.util.Map;
+import java.util.UUID;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.containsString;
+
+/** DEMO-104: from the generated spec tests/api/DEMO-99/test-6.txt. */
+@QuarkusTest
+class ResetPasswordOldPasswordStopsWorkingTest {
+
+    private static final String OLD_PASSWORD = "OldP@ssw0rd1";
+    private static final String NEW_PASSWORD = "NewP@ssw0rd2";
+
+    /** Registers a user through POST /users and returns the email it was registered with. */
+    private String registerUser(String email) {
+        given().contentType(ContentType.JSON)
+            .body(Map.of("name", "Reset Tester", "email", email, "password", OLD_PASSWORD))
+            .when().post("/users")
+            .then().statusCode(201);
+        return email;
+    }
+
+    private String uniqueEmail() {
+        return "reset-" + UUID.randomUUID() + "@example.com";
+    }
+
+    private io.restassured.response.ValidatableResponse reset(Object email, Object current, Object next) {
+        java.util.Map<String, Object> body = new java.util.HashMap<>();
+        body.put("email", email);
+        body.put("currentPassword", current);
+        body.put("newPassword", next);
+        return given().contentType(ContentType.JSON).body(body)
+            .when().post("/users/reset-password")
+            .then();
+    }
+
+    @Test
+    void oldPasswordIsRejectedAfterAReset() {
+        String email = registerUser(uniqueEmail());
+        reset(email, OLD_PASSWORD, NEW_PASSWORD).statusCode(204);
+
+        reset(email, OLD_PASSWORD, "Another#Pass4")
+            .statusCode(401)
+            .body(containsString("Invalid email or password"));
+    }
+
+    @Test
+    void newPasswordWorksAfterAReset() {
+        String email = registerUser(uniqueEmail());
+        reset(email, OLD_PASSWORD, NEW_PASSWORD).statusCode(204);
+
+        reset(email, NEW_PASSWORD, "Another#Pass4").statusCode(204);
+    }
+}

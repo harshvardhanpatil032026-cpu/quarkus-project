@@ -1,14 +1,27 @@
 package com.my.proj.exception;
 
 /**
- * Thrown for every login failure: unknown email, wrong password, or a user with no stored
- * password hash. The message is deliberately generic so callers cannot tell which it was.
+ * Thrown when an email and password do not identify a user: unknown email, wrong password, or a
+ * user with no stored password hash. Each operation uses one fixed message for all three cases,
+ * so callers cannot tell which emails are registered.
  */
 public class InvalidCredentialsException extends RuntimeException {
 
-    public static final String MESSAGE = "Invalid credentials";
+    /** Login failure message (DEMO-90). */
+    public static final String LOGIN_FAILURE_MESSAGE = "Invalid credentials";
 
-    public InvalidCredentialsException() {
-        super(MESSAGE, null, false, false);
+    /** Password-reset failure message (DEMO-99). */
+    public static final String RESET_FAILURE_MESSAGE = "Invalid email or password";
+
+    private InvalidCredentialsException(String message) {
+        super(message, null, false, false);
+    }
+
+    public static InvalidCredentialsException forLogin() {
+        return new InvalidCredentialsException(LOGIN_FAILURE_MESSAGE);
+    }
+
+    public static InvalidCredentialsException forPasswordReset() {
+        return new InvalidCredentialsException(RESET_FAILURE_MESSAGE);
     }
 }
