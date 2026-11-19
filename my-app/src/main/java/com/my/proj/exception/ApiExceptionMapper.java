@@ -18,7 +18,9 @@ public class ApiExceptionMapper implements ExceptionMapper<RuntimeException> {
         }
         Status status = switch (e) {
             case UserNotFoundException x -> Status.NOT_FOUND;
+            case FirmNotFoundException x -> Status.NOT_FOUND;
             case EmailAlreadyExistsException x -> Status.CONFLICT;
+            case FirmCodeAlreadyExistsException x -> Status.CONFLICT;
             case InvalidCredentialsException x -> Status.UNAUTHORIZED;
             case IllegalArgumentException x -> Status.BAD_REQUEST;
             default -> Status.INTERNAL_SERVER_ERROR;

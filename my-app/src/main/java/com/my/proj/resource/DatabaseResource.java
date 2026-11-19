@@ -2,6 +2,7 @@ package com.my.proj.resource;
 
 import com.my.proj.service.DatabaseService;
 
+import jakarta.annotation.security.PermitAll;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 
@@ -15,6 +16,7 @@ public class DatabaseResource {
     }
 
     @GET
+    @PermitAll
     public String testConnection() {
         return "Connected to: " + databaseService.catalogName();
     }

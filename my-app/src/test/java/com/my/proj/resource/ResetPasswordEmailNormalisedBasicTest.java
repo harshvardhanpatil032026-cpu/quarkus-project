@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static io.restassured.RestAssured.given;
+import static com.my.proj.resource.TestAuth.given;
 
 /** DEMO-104: from the generated spec tests/api/DEMO-99/test-10.txt. */
 @QuarkusTest

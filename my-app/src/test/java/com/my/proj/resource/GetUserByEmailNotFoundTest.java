@@ -4,7 +4,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 
-import static io.restassured.RestAssured.given;
+import static com.my.proj.resource.TestAuth.given;
 import static org.hamcrest.Matchers.equalTo;
 
 /** DEMO-112, criterion 2 (tests/api/DEMO-112/test-2.txt): an unknown email returns 404 with a message. */
