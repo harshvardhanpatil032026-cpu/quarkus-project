@@ -11,6 +11,8 @@ import com.my.proj.dto.UserResponse;
 import com.my.proj.entity.User;
 import com.my.proj.service.UserService;
 
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.Consumes;
@@ -37,12 +39,14 @@ public class UserResource {
     }
 
     @GET
+    @RolesAllowed("user:read")
     public List<UserResponse> getUsers() {
         return userService.getAllUsers().stream().map(UserResponse::from).toList();
     }
 
     @GET
     @Path("/{id}")
+    @RolesAllowed("user:read")
     public UserResponse getUser(@PathParam("id") Long id) {
         return UserResponse.from(userService.getUserById(id));
     }
@@ -50,11 +54,13 @@ public class UserResource {
     /** 200 with the user's details; 404 "User not found with email: ..." when none matches (case-insensitive). */
     @GET
     @Path("/email/{email}")
+    @RolesAllowed("user:read")
     public UserResponse getUserByEmail(@PathParam("email") String email) {
         return UserResponse.from(userService.getUserByEmail(email));
     }
 
     @POST
+    @RolesAllowed("user:create")
     public Response createUser(@Valid RegisterUserRequest request) {
         User created = userService.createUser(request.name(), request.email(), request.password());
         return Response.created(URI.create("/users/" + created.id)).entity(UserResponse.from(created)).build();
@@ -63,6 +69,7 @@ public class UserResource {
     /** 204 on success; 400 for invalid input or an unchanged password; 401 "Invalid email or password" otherwise. */
     @POST
     @Path("/reset-password")
+    @PermitAll
     public Response resetPassword(@NotNull(message = "request body is required") @Valid ResetPasswordRequest request) {
         userService.resetPassword(request.email(), request.currentPassword(), request.newPassword());
         return Response.noContent().build();
@@ -71,6 +78,7 @@ public class UserResource {
     /** 200 with the updated user; 400 listing every invalid field; 404 unknown user; 409 email taken. */
     @PATCH
     @Path("/email/{email}")
+    @RolesAllowed("user:update")
     public UserResponse updateUser(@PathParam("email") String email,
             @NotNull(message = "request body is required") @Valid UpdateUserRequest request) {
         return UserResponse.from(userService.updateUser(email, request.name(), request.email()));
@@ -79,6 +87,7 @@ public class UserResource {
     /** 204 on success; 400 listing every broken rule; 401 "Invalid email or password". */
     @PUT
     @Path("/email/{email}/password")
+    @PermitAll
     public Response changePassword(@PathParam("email") String email,
             @NotNull(message = "request body is required") ChangePasswordRequest request) {
         userService.changePassword(email, request.currentPassword(), request.newPassword());
@@ -88,6 +97,7 @@ public class UserResource {
     /** 204 on success; 404 "User not found with email: ..." when none matches. */
     @DELETE
     @Path("/email/{email}")
+    @RolesAllowed("user:delete")
     public Response deleteUserByEmail(@PathParam("email") String email) {
         userService.deleteUserByEmail(email);
         return Response.noContent().build();

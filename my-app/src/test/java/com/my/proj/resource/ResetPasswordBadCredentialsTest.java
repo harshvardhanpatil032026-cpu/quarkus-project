@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Map;
 import java.util.UUID;
 
-import static io.restassured.RestAssured.given;
+import static com.my.proj.resource.TestAuth.given;
 import static org.hamcrest.Matchers.containsString;
 
 /** DEMO-104: from the generated spec tests/api/DEMO-99/test-5.txt. */

@@ -11,6 +11,7 @@ import com.my.proj.exception.EmailAlreadyExistsException;
 import com.my.proj.exception.InvalidCredentialsException;
 import com.my.proj.exception.UserNotFoundException;
 import com.my.proj.repository.UserRepository;
+import com.my.proj.repository.UserRoleRepository;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -23,9 +24,11 @@ public class UserService {
     private static final String EMAIL = "email";
 
     private final UserRepository userRepository;
+    private final UserRoleRepository userRoleRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, UserRoleRepository userRoleRepository) {
         this.userRepository = userRepository;
+        this.userRoleRepository = userRoleRepository;
     }
 
     public List<User> getAllUsers() {
@@ -182,8 +185,12 @@ public class UserService {
             throw new IllegalArgumentException("Email cannot be null or empty");
         }
         String normalised = email.trim().toLowerCase(Locale.ROOT);
-        if (userRepository.delete(EMAIL, normalised) == 0) {
+        User user = userRepository.find(EMAIL, normalised).firstResult();
+        if (user == null) {
             throw new UserNotFoundException(normalised);
         }
+        // Role grants reference the user, so they go first.
+        userRoleRepository.deleteForUser(user.id);
+        userRepository.delete(user);
     }
 }

@@ -1,6 +1,6 @@
 package com.my.proj.resource;
 
-import static io.restassured.RestAssured.given;
+import static com.my.proj.resource.TestAuth.given;
 import static org.hamcrest.Matchers.containsString;
 
 import java.util.Map;
