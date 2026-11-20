@@ -13,7 +13,6 @@ import com.my.proj.repository.FirmRepository;
 import org.hibernate.exception.ConstraintViolationException;
 
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.persistence.PersistenceException;
 import jakarta.transaction.Transactional;
 
 @ApplicationScoped
@@ -49,8 +48,7 @@ public class FirmService {
         Instant now = Instant.now();
         firm.setCreatedAt(now);
         firm.setUpdatedAt(now);
-        firmRepository.persist(firm);
-        flushOrConflict(code);
+        persistOrConflict(firm, code);
         return firm;
     }
 
@@ -87,11 +85,27 @@ public class FirmService {
     private void flushOrConflict(String code) {
         try {
             firmRepository.flush();
-        } catch (PersistenceException e) {
-            if (e.getCause() instanceof ConstraintViolationException) {
-                throw new FirmCodeAlreadyExistsException(code);
+        } catch (RuntimeException e) {
+            throw uniqueViolation(e) ? new FirmCodeAlreadyExistsException(code) : e;
+        }
+    }
+
+    private static boolean uniqueViolation(Throwable e) {
+        for (Throwable t = e; t != null; t = t.getCause()) {
+            if (t instanceof ConstraintViolationException) {
+                return true;
             }
-            throw e;
+        }
+        return false;
+    }
+
+    /** With identity ids the insert runs inside persist, so the constraint can fire there as well as on flush. */
+    private void persistOrConflict(Firm firm, String code) {
+        try {
+            firmRepository.persist(firm);
+            firmRepository.flush();
+        } catch (RuntimeException e) {
+            throw uniqueViolation(e) ? new FirmCodeAlreadyExistsException(code) : e;
         }
     }
 
