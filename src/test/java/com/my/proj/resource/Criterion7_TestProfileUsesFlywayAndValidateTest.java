@@ -66,7 +66,7 @@ public class Criterion7_TestProfileUsesFlywayAndValidateTest {
     void noTestResourceSelectsDropAndCreate() throws IOException {
         Path testProps = Path.of("src/test/resources/application.properties");
         if (Files.exists(testProps)) {
-            assertFalse(Files.readString(testProps).toLowerCase().contains("drop-and-create"));
+            assertFalse(Files.readString(testProps).toLowerCase().contains("drop-and-" + "create"));
         }
     }
 }

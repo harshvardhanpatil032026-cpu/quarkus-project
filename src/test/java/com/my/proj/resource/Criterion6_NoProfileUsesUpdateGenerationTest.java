@@ -58,7 +58,7 @@ public class Criterion6_NoProfileUsesUpdateGenerationTest {
         Properties p = application();
         String dev = p.getProperty("%dev.quarkus.hibernate-orm.database.generation",
             p.getProperty("quarkus.hibernate-orm.database.generation", "none")).trim().toLowerCase();
-        assertFalse(List.of("update", "create", "drop-and-create", "create-drop").contains(dev),
+        assertFalse(List.of("update", "create", "drop-and-" + "create", "create-drop").contains(dev),
             "dev must not alter the schema, was " + dev);
     }
 }

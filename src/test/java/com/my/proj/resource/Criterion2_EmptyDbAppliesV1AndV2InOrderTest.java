@@ -186,7 +186,7 @@ public class Criterion2_EmptyDbAppliesV1AndV2InOrderTest {
             assertEquals(2, result.migrationsExecuted, "both migrations ran");
 
             assertEquals(List.of("1|true", "2|true"),
-                rows(schema, "select version, success from \"" + schema + "\".flyway_schema_history order by installed_rank"),
+                rows(schema, "select version, success::text from \"" + schema + "\".flyway_schema_history order by installed_rank"),
                 "V1 then V2, both successful, in flyway_schema_history");
         } finally {
             dropSchema(schema);

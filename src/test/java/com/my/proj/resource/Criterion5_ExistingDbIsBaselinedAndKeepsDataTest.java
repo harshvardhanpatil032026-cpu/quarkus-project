@@ -207,6 +207,13 @@ public class Criterion5_ExistingDbIsBaselinedAndKeepsDataTest {
                 }
             }
         }
+        // Columns the caller named are inserted even when nullable (users.email is nullable in the baseline).
+        for (Map.Entry<String, String> e : given.entrySet()) {
+            if (!names.contains("\"" + e.getKey() + "\"")) {
+                names.add("\"" + e.getKey() + "\"");
+                values.add("'" + e.getValue().replace("'", "''") + "'");
+            }
+        }
         try (Statement s = c.createStatement()) {
             s.execute("insert into " + table + " (" + String.join(",", names) + ") values (" + String.join(",", values) + ")");
         }
@@ -222,7 +229,7 @@ public class Criterion5_ExistingDbIsBaselinedAndKeepsDataTest {
                 Optional<Path> old = oldAccessControlScript();
                 s.execute(old.isPresent() ? Files.readString(old.get()) : resource("db/migration/V2__access_control.sql"));
                 insertRow(c, "users", Map.of("email", "keep@example.com", "name", "Keep Me"));
-                insertRow(c, "firms", Map.of("code", "KEEP1", "name", "Keep Firm"));
+                insertRow(c, "firms", Map.of("code", "KEEP1", "name", "Keep Firm", "status", "ACTIVE"));
             }
             assertEquals(1, count(schema, "users"));
             assertEquals(1, count(schema, "firms"));
@@ -231,7 +238,7 @@ public class Criterion5_ExistingDbIsBaselinedAndKeepsDataTest {
             assertTrue(result.success, "migration succeeded without an 'already exists' failure");
 
             assertEquals(List.of("1|BASELINE|true", "2|SQL|true"),
-                rows(schema, "select version, type, success from \"" + schema + "\".flyway_schema_history order by installed_rank"),
+                rows(schema, "select version, type, success::text from \"" + schema + "\".flyway_schema_history order by installed_rank"),
                 "baselined at version 1, then V2 applied");
             assertEquals(1, count(schema, "users"), "the user row is intact");
             assertEquals(1, count(schema, "firms"), "the firm row is intact");
